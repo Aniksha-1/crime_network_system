@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Streamlit / Runtime artifacts
+crime_graph.html
+
+# Environment & secrets
+.env
+*.env
+SARVAM_API_KEY*
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+
+# Packages
+hackathon.zip
+*.zip

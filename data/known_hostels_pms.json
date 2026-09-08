@@ -1,0 +1,35 @@
+{
+  "description": "Known high-occupancy multi-tenant addresses where address entropy is high (student hostels, PG accommodations, commercial office towers). Automated entity resolution MUST down-weight address matching for these locations to prevent false syndicate clustering.",
+  "known_multi_tenant_keywords": [
+    "hostel",
+    "pg",
+    "paying guest",
+    "mansion",
+    "residency",
+    "tower",
+    "tech park",
+    "cyber towers",
+    "dlf",
+    "mindspace"
+  ],
+  "known_addresses": [
+    {
+      "id": "ADDR_AMEERPET_01",
+      "address_string": "H.No. 4-1-25, Balaji Deluxe Boys Hostel, Lane 3, Ameerpet, Hyderabad",
+      "capacity_estimate": 140,
+      "address_type": "STUDENT_HOSTEL"
+    },
+    {
+      "id": "ADDR_SR_NAGAR_02",
+      "address_string": "Flat 302, Sai Ram PG for Men, Main Road, SR Nagar, Hyderabad",
+      "capacity_estimate": 80,
+      "address_type": "STUDENT_HOSTEL"
+    },
+    {
+      "id": "ADDR_HINJEWADI_03",
+      "address_string": "Phase 1, Blue Ridge Executive Towers, Hinjewadi, Pune",
+      "capacity_estimate": 500,
+      "address_type": "COMMERCIAL_OFFICE"
+    }
+  ]
+}

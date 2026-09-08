@@ -1,0 +1,28 @@
+FIRST INFORMATION REPORT (FIR)
+Under Section 173 BNSS, 2023 (formerly Section 154 CrPC)
+Police Station: Cyber Crime Police Station, Cyberabad Commissionerate
+District: Cyberabad, Telangana State
+FIR No: 104/2026
+Date & Time of FIR: 14/02/2026 19:45 IST
+Acts & Sections: Section 318(4) BNS [Cheating], Section 111 BNS [Organised Crime], Section 66D IT Act, 2008
+
+1. Complainant / Informant:
+   Name: Dr. K. Satyanarayana Rao (Age: 68 years)
+   Occupation: Retired Professor, Resident of Gachibowli, Hyderabad
+
+2. Incident Details:
+   Date & Time: 12/02/2026 to 14/02/2026
+   Type of Offence: Digital Arrest Scam / Impersonation of CBI & Cyber Police Officers
+   Total Amount Defrauded: INR 28,50,000/- (Twenty Eight Lakhs Fifty Thousand Only)
+
+3. Brief Facts of the Case:
+   The complainant reported that on 12-Feb-2026 at 11:20 AM, he received a phone call from mobile number +919876543210 claiming to be from FedX courier customs Mumbai stating illegal narcotics were found in a parcel booked under his Aadhaar. The caller then transferred call to another associate impersonating DCP Cyber Crime Mumbai calling from mobile +919123456789. 
+   Under coercion and threat of immediate arrest, the complainant was instructed to liquidate fixed deposits and transfer funds for "RBI security verification".
+   The complainant transferred amounts via RTGS and IMPS:
+   - INR 15,00,000 to IndusInd Bank A/C 9192837465 (IFSC: INDB0000421)
+   - INR 13,50,000 in tranches to UPI ID rahim99@upi
+   
+   During physical surveillance outside the complainant's bank branch in Madhapur on 13-Feb-2026, a suspicious white Maruti Swift car was spotted monitoring the complainant. CCTV footage shows partial vehicle registration number as TS09A81234 (suspected OCR distortion for TS09AB1234). 
+   Suspect named during calls was identified by alias "Rahim Bhai" or "Mohd Abdul Rahim".
+
+Investigating Officer: Inspector V. Ramesh, Badge #CYB-4092

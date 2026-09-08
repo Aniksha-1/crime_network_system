@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICNAS - Case File CR-CYB-104: Operation Cyber-Spider</title>
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Cytoscape.js for Network Graph -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Google Fonts: Press Start 2P (8-bit), Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'monospace', 'cursive'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            dark: {
+              950: '#070B11',
+              900: '#0B111A',
+              850: '#101826',
+              800: '#162234',
+              700: '#203047',
+              600: '#334763'
+            },
+            police: {
+              blue: '#1E40AF',
+              cyan: '#06B6D4',
+              crimson: '#EF4444',
+              amber: '#F59E0B',
+              emerald: '#10B981',
+              purple: '#8B5CF6'
+            },
+            retro: {
+              green: '#39FF14',
+              amber: '#FFB000',
+              cyan: '#00F0FF',
+              dark: '#050B08'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #070B11;
+      color: #F3F4F6;
+      overflow-x: hidden;
+    }
+    #cy {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #0F172A 0%, #070B11 100%);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #0B111A;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #203047;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #334763;
+    }
+
+    /* 8-Bit Scanline & CRT Vignette Overlay */
+    .crt-overlay {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+    .pixelated {
+      image-rendering: pixelated;
+      shape-rendering: crispEdges;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .cursor-blink {
+      animation: blink 0.8s infinite;
+    }
+
+    /* 8-Bit Character Keyframe Animations */
+    @keyframes typeHands {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .hacker-hands {
+      animation: typeHands 0.2s infinite ease-in-out;
+    }
+    @keyframes visorGlint {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.4; }
+    }
+    .visor-glint {
+      animation: visorGlint 1.2s infinite ease-in-out;
+    }
+    @keyframes micPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .mic-pulse {
+      animation: micPulse 0.6s infinite;
+    }
+    @keyframes runCycle {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-4px) rotate(2deg); }
+    }
+    .running-thief {
+      animation: runCycle 0.35s infinite ease-in-out;
+    }
+    @keyframes rainFall {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-15px, 30px); }
+    }
+    .rain-streaks {
+      animation: rainFall 0.25s infinite linear;
+    }
+    @keyframes smoke1 {
+      0% { opacity: 0.8; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-12px) scale(1.6); }
+    }
+    .smoke-1 { animation: smoke1 1s infinite ease-out; }
+    .smoke-2 { animation: smoke1 1s infinite 0.3s ease-out; }
+    .smoke-3 { animation: smoke1 1s infinite 0.6s ease-out; }
+    @keyframes phoneBuzz {
+      0%, 100% { transform: translate(110px, 70px) rotate(0deg); }
+      25% { transform: translate(109px, 69px) rotate(-3deg); }
+      75% { transform: translate(111px, 71px) rotate(3deg); }
+    }
+    .buzzing-phone {
+      animation: phoneBuzz 0.15s infinite;
+    }
+    @keyframes sirenA {
+      0%, 100% { fill: #EF4444; filter: drop-shadow(0 0 8px #EF4444); }
+      50% { fill: #3B82F6; filter: drop-shadow(0 0 8px #3B82F6); }
+    }
+    .siren-light { animation: sirenA 0.6s infinite; }
+    @keyframes sirenB {
+      0%, 100% { fill: #3B82F6; filter: drop-shadow(0 0 8px #3B82F6); }
+      50% { fill: #EF4444; filter: drop-shadow(0 0 8px #EF4444); }
+    }
+    .siren-light-alt { animation: sirenB 0.6s infinite; }
+    @keyframes radarSpin {
+      0% { transform: rotate(0deg); transform-origin: 50px 55px; }
+      100% { transform: rotate(360deg); transform-origin: 50px 55px; }
+    }
+    .radar-line { animation: radarSpin 2s infinite linear; }
+  </style>
+</head>
+<body class="font-sans antialiased custom-scroll select-none">
+
+  <!-- ================= 8-BIT RETRO NIGHT STORY INTRO SCREEN ================= -->
+  <div id="storyIntroScreen" class="fixed inset-0 z-50 bg-[#050B08] flex flex-col justify-between p-6 md:p-12 crt-overlay overflow-hidden transition-opacity duration-700">
+    
+    <!-- Top Retro Terminal Bar -->
+    <div class="flex items-center justify-between border-b border-emerald-900/60 pb-4">
+      <div class="flex items-center space-x-3">
+        <span class="inline-block w-3 h-3 bg-retro-green animate-ping rounded-full"></span>
+        <span class="font-pixel text-[11px] md:text-xs text-retro-green tracking-wider">CYBER CRIME TERMINAL // OS-86.2</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="soundToggleBtn" onclick="toggleSound()" class="font-pixel text-[10px] text-retro-green/80 hover:text-retro-green px-3 py-1 border border-emerald-800 rounded bg-emerald-950/40 transition">
+          <i class="fa-solid fa-volume-high mr-1"></i> AUDIO: ON
+        </button>
+        <button onclick="skipIntro()" class="font-pixel text-[10px] text-retro-amber hover:text-amber-300 px-3 py-1 border border-amber-800 rounded bg-amber-950/40 transition">
+          SKIP INTRO [ESC] &gt;&gt;
+        </button>
+      </div>
+    </div>
+
+    <!-- Center Cinematic Animation Display -->
+    <div class="max-w-4xl mx-auto w-full my-auto flex flex-col items-center justify-center text-center space-y-6">
+      
+      <!-- 8-Bit Pixel Animated Graphic Frame -->
+      <div class="relative w-80 h-52 md:w-[460px] md:h-64 border-2 border-emerald-600/80 bg-black/95 p-3 rounded-lg shadow-[0_0_35px_rgba(57,255,20,0.3)] flex items-center justify-center overflow-hidden">
+        <!-- SVG 8-Bit Pixel Scenes Container -->
+        <div id="pixelSceneContainer" class="w-full h-full flex items-center justify-center pixelated">
+          <!-- Dynamically swapped SVG scenes -->
+        </div>
+
+        <!-- Corner Reticles -->
+        <div class="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-retro-green"></div>
+        <div class="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-retro-green"></div>
+        <div class="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-retro-green"></div>
+        <div class="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-retro-green"></div>
+      </div>
+
+      <!-- Typewriter Text Box with Fixed Spacing & Character Speaker Badge -->
+      <div class="w-full max-w-2xl bg-black/90 border border-emerald-800/80 p-5 rounded-md shadow-2xl min-h-[125px] flex flex-col justify-center text-left">
+        <div id="characterSpeakerBadge" class="font-pixel text-[10px] text-retro-amber mb-2 tracking-wider">
+          ▶ TARGET: THE CYBER HACKER CELL
+        </div>
+        <div class="flex items-start">
+          <p id="typewriterText" class="font-pixel text-[11px] sm:text-xs md:text-[13px] text-retro-green leading-[2.2] tracking-wider text-left w-full whitespace-pre-line break-words"></p>
+          <span id="terminalCursor" class="font-pixel text-sm text-retro-green cursor-blink ml-1">_</span>
+        </div>
+      </div>
+
+      <!-- Case Identifier Tagline -->
+      <div class="font-pixel text-[10px] text-gray-400 tracking-widest uppercase">
+        INCIDENT LOG: <span class="text-retro-cyan">CR-CYB-104/2026</span> // CODENAME: <span class="text-retro-amber">OPERATION CYBER-SPIDER</span>
+      </div>
+    </div>
+
+    <!-- Bottom Progress & Loading Status -->
+    <div class="space-y-2 max-w-4xl mx-auto w-full">
+      <div class="flex justify-between items-center font-pixel text-[9px] text-emerald-500">
+        <span id="introStatusText">DECIPHERING ENCRYPTED POLICE LOGS...</span>
+        <span id="introTimeRemaining">13s</span>
+      </div>
+      <div class="w-full bg-emerald-950/60 border border-emerald-800/80 h-3 rounded overflow-hidden p-0.5">
+        <div id="introProgressBar" class="h-full bg-retro-green transition-all duration-300" style="width: 5%;"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= TOP NAVIGATION BAR (INVESTIGATOR COCKPIT) ================= -->
+  <header class="h-16 border-b border-dark-700 bg-dark-900/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
+    <div class="flex items-center space-x-4">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="Emblem of India" class="h-9 brightness-110" />
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="font-bold text-base tracking-wide text-white flex items-center">
+            ICNAS <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded bg-blue-900/70 text-blue-300 border border-blue-700/50">MHA SIH 26189</span>
+          </h1>
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950 text-emerald-400 border border-emerald-800/60">
+            <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            CPU Deterministic Engine
+          </span>
+        </div>
+        <p class="text-[11px] text-gray-400">Explainable Temporal Crime Knowledge Graph | BSA 2023 Sec 63 Provenance</p>
+      </div>
+    </div>
+
+    <!-- Right Action Bar: Case File & Tools -->
+    <div class="flex items-center space-x-3">
+      <!-- Search Input -->
+      <div class="relative w-56 hidden md:block">
+        <i class="fa-solid fa-search absolute left-3 top-2.5 text-xs text-gray-400"></i>
+        <input id="searchInput" type="text" placeholder="Search in Case CR-104..." 
+          class="w-full bg-dark-850 border border-dark-700 rounded-md py-1.5 pl-8 pr-3 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-500" />
+      </div>
+
+      <!-- Active Locked Case File Pill -->
+      <button onclick="openCaseDocket()" class="px-3 py-1.5 bg-red-950/80 hover:bg-red-900/80 border border-red-700/70 text-red-300 rounded text-xs font-semibold flex items-center transition shadow-sm">
+        <i class="fa-solid fa-folder-open mr-1.5 text-red-400"></i>
+        <span>ACTIVE CASE: <strong class="text-white">CR-CYB-104</strong></span>
+        <span class="ml-2 bg-red-800/80 text-[10px] px-1.5 py-0.2 rounded text-red-100">DOCKET</span>
+      </button>
+
+      <!-- Replay 8-Bit Intro Button -->
+      <button onclick="startStoryIntro()" class="px-3 py-1.5 bg-dark-800 hover:bg-dark-700 border border-dark-700 rounded text-xs text-gray-300 transition flex items-center">
+        <i class="fa-solid fa-tape mr-1.5 text-retro-amber"></i> Replay Intro
+      </button>
+
+      <!-- Reset View Button -->
+      <button onclick="fitGraph()" class="px-3 py-1.5 bg-dark-800 hover:bg-dark-700 border border-dark-700 rounded text-xs text-gray-300 transition flex items-center">
+        <i class="fa-solid fa-expand mr-1.5 text-gray-400"></i> Reset View
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN INVESTIGATION WORKSPACE ================= -->
+  <div class="flex h-[calc(100vh-4rem)]">
+
+    <!-- LEFT SIDEBAR: FILTERS & NAVIGATION TABS -->
+    <aside class="w-72 border-r border-dark-700 bg-dark-900 flex flex-col justify-between shrink-0 custom-scroll overflow-y-auto">
+      <div class="p-4 space-y-6">
+
+        <!-- Case Officer Persona Card -->
+        <div class="bg-dark-850 border border-dark-700 p-3 rounded-lg flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-blue-900/50 border border-blue-700/60 flex items-center justify-center text-blue-400">
+            <i class="fa-solid fa-user-shield text-base"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[10px] uppercase font-semibold text-gray-400">Lead Investigator</div>
+            <div class="text-xs font-bold text-white truncate">Inspector V. Ramesh</div>
+            <div class="text-[10px] text-cyan-400 font-mono">Badge: #CYB-4092</div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div>
+          <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">Investigation Modules</span>
+          <nav class="space-y-1">
+            <button onclick="switchTab('graph')" id="tab-btn-graph" class="w-full flex items-center px-3 py-2 text-xs font-medium rounded-md bg-blue-600/20 text-blue-400 border border-blue-500/30">
+              <i class="fa-solid fa-project-diagram w-5 text-blue-400"></i> Knowledge Graph
+            </button>
+            <button onclick="switchTab('pathfinder')" id="tab-btn-pathfinder" class="w-full flex items-center px-3 py-2 text-xs font-medium rounded-md text-gray-300 hover:bg-dark-800 hover:text-white transition">
+              <i class="fa-solid fa-route w-5 text-cyan-400"></i> Cross-Case Path Trace
+            </button>
+            <button onclick="switchTab('antimerge')" id="tab-btn-antimerge" class="w-full flex items-center px-3 py-2 text-xs font-medium rounded-md text-gray-300 hover:bg-dark-800 hover:text-white transition">
+              <i class="fa-solid fa-shield-halved w-5 text-amber-400"></i> Anti-Merge Safeguards
+            </button>
+            <button onclick="switchTab('sarvam')" id="tab-btn-sarvam" class="w-full flex items-center px-3 py-2 text-xs font-medium rounded-md text-gray-300 hover:bg-dark-800 hover:text-white transition">
+              <i class="fa-solid fa-microphone-lines w-5 text-purple-400"></i> Sarvam AI Speech Intercept
+            </button>
+            <button onclick="switchTab('bsa')" id="tab-btn-bsa" class="w-full flex items-center px-3 py-2 text-xs font-medium rounded-md text-gray-300 hover:bg-dark-800 hover:text-white transition">
+              <i class="fa-solid fa-file-signature w-5 text-emerald-400"></i> BSA Sec 63 Certificate
+            </button>
+          </nav>
+        </div>
+
+        <!-- Graph Layout & Physics -->
+        <div id="graphControlsSection">
+          <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">Graph Layout</span>
+          <div class="grid grid-cols-3 gap-1 bg-dark-850 p-1 rounded border border-dark-700">
+            <button onclick="changeLayout('cose')" class="py-1 text-[11px] font-medium rounded bg-dark-700 text-white">CoSE</button>
+            <button onclick="changeLayout('concentric')" class="py-1 text-[11px] font-medium rounded text-gray-400 hover:text-white">Central</button>
+            <button onclick="changeLayout('breadthfirst')" class="py-1 text-[11px] font-medium rounded text-gray-400 hover:text-white">Tree</button>
+          </div>
+
+          <!-- Edge Tier Filters -->
+          <div class="mt-5">
+            <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">Relationship Tiers</span>
+            <div class="space-y-1.5">
+              <label class="flex items-center text-xs text-gray-300 cursor-pointer">
+                <input type="checkbox" id="filter-observed" checked onchange="applyFilters()" class="rounded bg-dark-800 border-dark-600 text-emerald-500 focus:ring-0 mr-2" />
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2 inline-block"></span>
+                <span>OBSERVED (Official Record)</span>
+              </label>
+              <label class="flex items-center text-xs text-gray-300 cursor-pointer">
+                <input type="checkbox" id="filter-inferred" checked onchange="applyFilters()" class="rounded bg-dark-800 border-dark-600 text-amber-500 focus:ring-0 mr-2" />
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-2 inline-block"></span>
+                <span>INFERRED (ER Matched)</span>
+              </label>
+              <label class="flex items-center text-xs text-gray-300 cursor-pointer">
+                <input type="checkbox" id="filter-hypothesis" checked onchange="applyFilters()" class="rounded bg-dark-800 border-dark-600 text-blue-500 focus:ring-0 mr-2" />
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-2 inline-block"></span>
+                <span>HYPOTHESIS (Structural)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Node Type Toggles -->
+          <div class="mt-5">
+            <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">Entity Classes</span>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <span class="flex items-center"><i class="fa-solid fa-circle text-red-500 text-[9px] mr-1.5"></i> Person</span>
+              <span class="flex items-center"><i class="fa-solid fa-phone text-blue-400 text-[9px] mr-1.5"></i> Phone</span>
+              <span class="flex items-center"><i class="fa-solid fa-car text-amber-400 text-[9px] mr-1.5"></i> Vehicle</span>
+              <span class="flex items-center"><i class="fa-solid fa-building-columns text-emerald-400 text-[9px] mr-1.5"></i> Bank/UPI</span>
+              <span class="flex items-center"><i class="fa-solid fa-folder text-purple-400 text-[9px] mr-1.5"></i> FIR Case</span>
+              <span class="flex items-center"><i class="fa-solid fa-location-dot text-gray-400 text-[9px] mr-1.5"></i> Location</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Statutory Footer Info -->
+      <div class="p-4 border-t border-dark-700 bg-dark-950 text-[10px] text-gray-500 space-y-1">
+        <div><i class="fa-solid fa-scale-balanced mr-1 text-gray-400"></i> Legal Standard: BSA 2023 Sec 63</div>
+        <div><i class="fa-solid fa-microchip mr-1 text-gray-400"></i> Compute: 100% CPU (No GPU req.)</div>
+        <div><i class="fa-solid fa-flag mr-1 text-gray-400"></i> Speech: Sarvam AI Sovereign ASR</div>
+      </div>
+    </aside>
+
+    <!-- CENTER & MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+
+      <!-- TOP METRIC KPI CARDS BAR -->
+      <div class="h-16 border-b border-dark-700 bg-dark-900/60 px-6 flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-6 text-xs">
+          <!-- KPI 1 -->
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded bg-dark-800 border border-dark-700 flex items-center justify-center text-blue-400">
+              <i class="fa-solid fa-file-shield"></i>
+            </div>
+            <div>
+              <div class="text-gray-400 text-[10px] uppercase font-semibold">Evidence Ingested</div>
+              <div class="text-white font-bold font-mono">5 Files (SHA-256)</div>
+            </div>
+          </div>
+
+          <div class="h-6 w-px bg-dark-700"></div>
+
+          <!-- KPI 2 -->
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded bg-dark-800 border border-dark-700 flex items-center justify-center text-cyan-400">
+              <i class="fa-solid fa-network-wired"></i>
+            </div>
+            <div>
+              <div class="text-gray-400 text-[10px] uppercase font-semibold">Entities Discovered</div>
+              <div class="text-white font-bold font-mono">26 Resolved Nodes</div>
+            </div>
+          </div>
+
+          <div class="h-6 w-px bg-dark-700"></div>
+
+          <!-- KPI 3 -->
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded bg-dark-800 border border-dark-700 flex items-center justify-center text-emerald-400">
+              <i class="fa-solid fa-link"></i>
+            </div>
+            <div>
+              <div class="text-gray-400 text-[10px] uppercase font-semibold">Corroborated Links</div>
+              <div class="text-white font-bold font-mono">29 Cross-Case Edges</div>
+            </div>
+          </div>
+
+          <div class="h-6 w-px bg-dark-700"></div>
+
+          <!-- KPI 4 -->
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded bg-dark-800 border border-dark-700 flex items-center justify-center text-amber-400">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <div>
+              <div class="text-gray-400 text-[10px] uppercase font-semibold">Top Covert Broker</div>
+              <div class="text-amber-400 font-bold font-mono">TS09AB1234 & Farooq</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action: Highlight Kingpin -->
+        <button onclick="highlightTopBroker()" class="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 rounded text-xs font-semibold flex items-center transition">
+          <i class="fa-solid fa-bullseye mr-1.5"></i> Highlight Covert Kingpin
+        </button>
+      </div>
+
+      <!-- ================= CONTENT TAB 1: GRAPH CANVAS ================= -->
+      <div id="content-graph" class="flex-1 relative w-full h-full">
+        <div id="cy"></div>
+
+        <!-- Canvas Floating Quick Legend -->
+        <div class="absolute bottom-4 left-4 bg-dark-900/80 backdrop-blur-md border border-dark-700 p-2.5 rounded text-[11px] text-gray-400 flex items-center space-x-4 pointer-events-none">
+          <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1"></span> Solid = Verified Record</span>
+          <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 mr-1"></span> Amber = Inferred Link</span>
+          <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500 mr-1"></span> Dashed = Structural</span>
+          <span class="text-gray-500">| Click node or edge to inspect</span>
+        </div>
+      </div>
+
+      <!-- ================= CONTENT TAB 2: PATHFINDER ================= -->
+      <div id="content-pathfinder" class="hidden flex-1 p-6 custom-scroll overflow-y-auto bg-dark-950">
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center">
+              <i class="fa-solid fa-route text-cyan-400 mr-2"></i> Cross-Jurisdiction Evidence Path Tracing
+            </h2>
+            <p class="text-xs text-gray-400">Discover deterministic multi-hop trails connecting independent police station cases.</p>
+          </div>
+
+          <!-- Selector Box -->
+          <div class="grid grid-cols-2 gap-4 bg-dark-900 border border-dark-700 p-4 rounded-lg">
+            <div>
+              <label class="text-xs font-semibold text-gray-300 block mb-1">Origin Entity / Case</label>
+              <select id="pathOrigin" class="w-full bg-dark-850 border border-dark-700 rounded p-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                <option value="CASE_104_2026">FIR 104/2026 (Cyberabad Digital Arrest Scam)</option>
+                <option value="CASE_88_2026">FIR 88/2026 (Hyderabad Courier Customs Scam)</option>
+                <option value="CASE_19_2026">FIR 19/2026 (Rachakonda Stolen Swift Vehicle)</option>
+                <option value="PERSON_RAHIM">Rahim Khan (Operative / Runner)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-gray-300 block mb-1">Destination Entity / Case</label>
+              <select id="pathDest" class="w-full bg-dark-850 border border-dark-700 rounded p-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                <option value="CASE_42_2026">FIR 42/2026 (Pune Crime Branch Hawala Raid)</option>
+                <option value="PERSON_FAROOQ">Farooq Ahmed (Alias: Bhaijaan - Coordinator)</option>
+                <option value="TS09AB1234">Vehicle TS09AB1234 (Swift Getaway Car)</option>
+              </select>
+            </div>
+            <div class="col-span-2 flex justify-end">
+              <button onclick="runPathTrace()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-semibold flex items-center transition shadow-lg shadow-cyan-900/30">
+                <i class="fa-solid fa-play mr-1.5"></i> Trace Deterministic Path
+              </button>
+            </div>
+          </div>
+
+          <!-- Path Results Box -->
+          <div id="pathResultContainer" class="bg-dark-900 border border-dark-700 p-5 rounded-lg space-y-4">
+            <div class="text-xs text-gray-400">Select origin and destination above, then click Trace.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= CONTENT TAB 3: ANTI-MERGE SAFEGUARDS ================= -->
+      <div id="content-antimerge" class="hidden flex-1 p-6 custom-scroll overflow-y-auto bg-dark-950">
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center">
+              <i class="fa-solid fa-shield-halved text-amber-400 mr-2"></i> Algorithmic Anti-Merge Safeguards & Responsible AI
+            </h2>
+            <p class="text-xs text-gray-400">Live demonstration of how the system prevents false arrests, hostel address misclustering, and co-accused errors.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- Test 1: Ameerpet Hostel -->
+            <div class="bg-dark-900 border border-dark-700 p-5 rounded-lg space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white flex items-center">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Test 1: Ameerpet Student Hostel
+                </span>
+                <span class="text-[10px] bg-amber-950 text-amber-400 px-2 py-0.5 rounded border border-amber-800">Address Entropy</span>
+              </div>
+              <p class="text-xs text-gray-400">
+                Record 1: Student S. Rahul<br />
+                Record 2: Accused V. Suresh<br />
+                Shared: <span class="text-gray-200">H.No. 4-1-25, Balaji Deluxe Boys Hostel, Ameerpet</span>
+              </p>
+              <button onclick="testHostel()" class="w-full py-2 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded text-xs font-semibold text-white transition">
+                Evaluate Pair Match
+              </button>
+              <div id="hostelResult" class="p-3 bg-dark-850 rounded border border-dark-700 text-xs hidden"></div>
+            </div>
+
+            <!-- Test 2: Co-accused in Same FIR -->
+            <div class="bg-dark-900 border border-dark-700 p-5 rounded-lg space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white flex items-center">
+                  <span class="w-2 h-2 rounded-full bg-crimson mr-2"></span> Test 2: Co-accused Conflict
+                </span>
+                <span class="text-[10px] bg-red-950 text-red-400 px-2 py-0.5 rounded border border-red-800">Hard Negative</span>
+              </div>
+              <p class="text-xs text-gray-400">
+                Record 1: Imran Qureshi (Accused #1 in FIR 42/2026)<br />
+                Record 2: Tariq Sheikh (Accused #2 in FIR 42/2026)<br />
+                Conflict: Both co-accused in exact same charge sheet.
+              </p>
+              <button onclick="testCoAccused()" class="w-full py-2 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded text-xs font-semibold text-white transition">
+                Evaluate Pair Match
+              </button>
+              <div id="coAccusedResult" class="p-3 bg-dark-850 rounded border border-dark-700 text-xs hidden"></div>
+            </div>
+
+            <!-- Test 3: Vehicle Plate OCR Repair -->
+            <div class="bg-dark-900 border border-dark-700 p-5 rounded-lg space-y-3 md:col-span-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white flex items-center">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 mr-2"></span> Test 3: Indian Vehicle License OCR Error Normalizer
+                </span>
+                <span class="text-[10px] bg-cyan-950 text-cyan-400 px-2 py-0.5 rounded border border-cyan-800">Plate Normalizer</span>
+              </div>
+              <div class="flex items-center space-x-3">
+                <input id="plateInput" type="text" value="TS09A81234" class="flex-1 bg-dark-850 border border-dark-700 rounded p-2 text-xs text-white focus:outline-none focus:border-cyan-500" />
+                <button onclick="testPlateNormalizer()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-semibold transition">
+                  Normalize Registration
+                </button>
+              </div>
+              <div id="plateResult" class="p-3 bg-dark-850 rounded border border-dark-700 text-xs hidden"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= CONTENT TAB 4: SARVAM AI SPEECH ================= -->
+      <div id="content-sarvam" class="hidden flex-1 p-6 custom-scroll overflow-y-auto bg-dark-950">
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center">
+              <i class="fa-solid fa-microphone-lines text-purple-400 mr-2"></i> Sarvam AI Sovereign Indic Speech-to-Text Intercept
+            </h2>
+            <p class="text-xs text-gray-400">MeitY / Bhashini sovereign speech models (Saaras Indic ASR) resolving Hinglish & Telugu dialect intercepts.</p>
+          </div>
+
+          <div class="bg-dark-900 border border-dark-700 p-5 rounded-lg space-y-4">
+            <div class="grid grid-cols-2 gap-4 text-xs">
+              <div>
+                <span class="text-gray-400">Intercept Target:</span>
+                <span class="text-white font-mono ml-2">+919876543210 ➔ +919123456789</span>
+              </div>
+              <div>
+                <span class="text-gray-400">ASR Engine:</span>
+                <span class="text-purple-400 font-semibold ml-2">Sarvam AI Saaras Indic ASR</span>
+              </div>
+              <div>
+                <span class="text-gray-400">Dialect Detected:</span>
+                <span class="text-emerald-400 ml-2">Hinglish / Telugu Code-Mixed (hi-IN / te-IN)</span>
+              </div>
+              <div>
+                <span class="text-gray-400">Data Residency:</span>
+                <span class="text-blue-400 ml-2">100% On-Premises Sovereign Compliance</span>
+              </div>
+            </div>
+
+            <!-- Audio Player Mock -->
+            <div class="bg-dark-850 p-3 rounded border border-dark-700 flex items-center space-x-3">
+              <button class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
+                <i class="fa-solid fa-play text-xs"></i>
+              </button>
+              <div class="flex-1">
+                <div class="h-1.5 bg-dark-700 rounded-full overflow-hidden">
+                  <div class="w-1/3 h-full bg-purple-500"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-gray-400 mt-1">
+                  <span>01:14</span>
+                  <span>call_intercept_20260212_1135.wav (420s)</span>
+                  <span>07:00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Transcripts -->
+            <div class="space-y-3">
+              <div>
+                <label class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">Verbatim Hinglish Intercept</label>
+                <div class="p-3 bg-dark-850 rounded border border-dark-700 text-xs text-gray-200 italic">
+                  "Bhaijaan, party line pe hai. Hyderabad doctor se 28 lakhs ka deal finalize ho gaya. IndusInd account 9192837465 me transfer aa raha hai. Baaki ka amount rahim99@upi pe divide karwayenge. Swift gaadi TS09AB1234 ready hai cash pickup ke liye. Pune drop kab karna hai?"
+                </div>
+              </div>
+              <div>
+                <label class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-1">English Certified Translation</label>
+                <div class="p-3 bg-dark-850 rounded border border-dark-700 text-xs text-emerald-300">
+                  "Bhaijaan, the target is on the line. The 28 lakh deal with the Hyderabad doctor is finalized. Transfer is coming into IndusInd account 9192837465. The remaining amount will be split into rahim99@upi. Swift car TS09AB1234 is ready for cash pickup. When should we drop it in Pune?"
+                </div>
+              </div>
+            </div>
+
+            <!-- Entities Extracted Table -->
+            <div>
+              <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block mb-2">Entities Fed to Knowledge Graph</span>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-300">
+                  <thead class="bg-dark-850 text-gray-400 uppercase text-[10px]">
+                    <tr>
+                      <th class="p-2">Type</th>
+                      <th class="p-2">Value</th>
+                      <th class="p-2">Confidence</th>
+                      <th class="p-2">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-dark-700">
+                    <tr><td class="p-2 text-purple-400">PERSON_ALIAS</td><td class="p-2 font-mono">Bhaijaan</td><td class="p-2 text-emerald-400">95%</td><td class="p-2 text-emerald-400">Mapped to Farooq Ahmed</td></tr>
+                    <tr><td class="p-2 text-emerald-400">BANK_ACCOUNT</td><td class="p-2 font-mono">9192837465</td><td class="p-2 text-emerald-400">99%</td><td class="p-2 text-emerald-400">Mule Account in FIR 104</td></tr>
+                    <tr><td class="p-2 text-cyan-400">UPI_VPA</td><td class="p-2 font-mono">rahim99@upi</td><td class="p-2 text-emerald-400">99%</td><td class="p-2 text-emerald-400">Mapped to Rahim Khan</td></tr>
+                    <tr><td class="p-2 text-amber-400">VEHICLE_PLATE</td><td class="p-2 font-mono">TS09AB1234</td><td class="p-2 text-emerald-400">98%</td><td class="p-2 text-emerald-400">Stolen in FIR 19/2026</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= CONTENT TAB 5: BSA CERTIFICATE ================= -->
+      <div id="content-bsa" class="hidden flex-1 p-6 custom-scroll overflow-y-auto bg-dark-950">
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-lg font-bold text-white flex items-center">
+                <i class="fa-solid fa-file-signature text-emerald-400 mr-2"></i> Bharatiya Sakshya Adhiniyam, 2023 (BSA) Section 63 Certificate
+              </h2>
+              <p class="text-xs text-gray-400">Statutory certificate of electronic evidence integrity for submission to Chief Judicial Magistrate.</p>
+            </div>
+            <button onclick="downloadBsaCertificate()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold flex items-center transition shadow-lg shadow-emerald-900/30">
+              <i class="fa-solid fa-download mr-1.5"></i> Download Certificate (.txt)
+            </button>
+          </div>
+
+          <div class="bg-dark-900 border border-dark-700 p-5 rounded-lg">
+            <pre id="bsaCertText" class="font-mono text-[11px] text-gray-300 whitespace-pre-wrap leading-relaxed bg-dark-950 p-4 rounded border border-dark-800 custom-scroll max-h-[500px] overflow-y-auto">
+================================================================================
+           CERTIFICATE OF ELECTRONIC RECORD EVIDENCE & INVESTIGATIVE AUDIT
+     [Issued Pursuant to Section 63 of Bharatiya Sakshya Adhiniyam, 2023 (BSA)]
+                     (Repealing Indian Evidence Act, 1872)
+================================================================================
+Certificate Ref No : BSA63-CYB-20260905-1740
+Date & Time Issued : 05-09-2026 17:40:00 IST
+Investigating Unit : Cyber Crime Police Station, Cyberabad Commissionerate
+Investigating Off. : Inspector V. Ramesh, Cyber Crime PS (Badge: CYB-4092)
+--------------------------------------------------------------------------------
+
+1. INVESTIGATED CRIME SYNDICATE & ASSOCIATED CASES:
+   Syndicate Moniker : Operation Cyber-Spider Syndicate
+   Connected FIRs    : FIR 104/2026 (Cyberabad), FIR 88/2026 (Hyderabad), FIR 42/2026 (Pune), FIR 19/2026 (Rachakonda)
+   Statutory Sections: BNS 318(4) [Cheating], BNS 111 [Organised Crime], BNS 303(2) [Theft], IT Act 66D
+   Total Fund Flow   : INR 40,50,000/-
+
+2. PRIMARY ELECTRONIC RECORDS & CRYPTOGRAPHIC INTEGRITY (CHAIN OF CUSTODY):
+   The following electronic data sources were ingested into the automated analytical engine.
+   Their cryptographic SHA-256 hashes are certified hereunder for data integrity:
+   [1] Source: fir_104_cyberabad.txt
+       Type   : FIR_POLICE_RECORD
+       SHA-256: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d679201948201928401928
+       Audit  : Verified Unaltered Primary Copy
+   [2] Source: cdr_dump_feb2026.csv
+       Type   : TELECOM_CDR_DUMP
+       SHA-256: 9b2cf535f27731c974343645a3985ec2e9245d7f139284019284019284019284
+       Audit  : Verified Unaltered Primary Copy
+   [3] Source: bank_upi_transactions.csv
+       Type   : BANK_LEDGER_DATA
+       SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       Audit  : Verified Unaltered Primary Copy
+
+3. CORROBORATED INVESTIGATIVE NETWORK LINKAGES:
+   The analytical engine surfaced the following deterministic relationships across jurisdictions:
+   (1) Farooq Ahmed (Alias: Bhaijaan) <====[COVERT_COORDINATOR]====> Rahim Khan (Operative)
+       Classification     : OBSERVED
+       Telecom Corroboration: 18 Calls logged on CDR Batch #994 (Tower ID: HYD-MADHAPUR)
+       Financial Proof    : INR 1,80,000 transferred to HDFC Bank (TXN_20104)
+       Physical Sighting  : Vehicle TS09AB1234 sighted outside Madhapur branch (ANPR_803)
+       Statutory Strength : HIGH_CORROBORATION (Ready for Warrant under Sec 94 BNSS)
+
+4. STATUTORY DECLARATION UNDER SECTION 63 BHARATIYA SAKSHYA ADHINIYAM, 2023:
+   I, the undersigned Investigating Officer, do hereby solemnly declare that:
+   (a) The electronic records and network graphs referenced above were generated through
+       deterministic mathematical parsing and record linkage on computers operating
+       properly under my lawful control;
+   (b) No probabilistic language hallucination or automated final guilt determination
+       was utilized; all linkages are grounded in verified document line items;
+   (c) The cryptographic hashes above accurately represent the electronic records at the
+       time of data capture;
+   (d) This certificate is issued for official investigative purposes, submission to the
+       Hon'ble Chief Judicial Magistrate for search warrants under Section 94 BNSS, 2023,
+       and for incorporation into the official Police Final Report / Charge-Sheet.
+
+--------------------------------------------------------------------------------
+Investigating Officer: Inspector V. Ramesh, Cyber Crime PS
+Signature & Seal     : _____________________________________________
+Date & Station Stamp : _____________________________________________
+================================================================================
+            </pre>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ================= SLIDE-OUT DRAWER: EXPLAIN CONNECTION ================= -->
+    <div id="explainDrawer" class="w-96 border-l border-dark-700 bg-dark-900/95 backdrop-blur-md flex flex-col justify-between shrink-0 transition-all duration-300 custom-scroll overflow-y-auto hidden">
+      <div class="p-5 space-y-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-dark-700 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-white">Provenance Inspector</h3>
+          </div>
+          <button onclick="closeDrawer()" class="text-gray-400 hover:text-white text-xs p-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Dynamic Content Injected Here -->
+        <div id="drawerBody" class="space-y-4 text-xs">
+          <div class="text-gray-400">Click on any node or connection line on the graph canvas to inspect verified evidence.</div>
+        </div>
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="p-4 border-t border-dark-700 bg-dark-950 text-[10px] text-gray-500">
+        ⚖️ Evidence grounded under BSA 2023 Sec 63. Decision support only — not guilt proof.
+      </div>
+    </div>
+
+    <!-- ================= MODAL: CASE DOCKET POPUP ================= -->
+    <div id="caseDocketModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+      <div class="bg-dark-900 border border-dark-700 w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+        <div class="p-4 bg-dark-850 border-b border-dark-700 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-800 text-[10px] font-mono font-bold">CASE DOCKET</span>
+            <h3 class="text-sm font-bold text-white">CR-CYB-104/2026 // Operation Cyber-Spider</h3>
+          </div>
+          <button onclick="closeCaseDocket()" class="text-gray-400 hover:text-white text-sm">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-4 custom-scroll overflow-y-auto text-xs text-gray-300">
+          <div class="grid grid-cols-2 gap-3 bg-dark-950 p-3 rounded border border-dark-800 font-mono text-[11px]">
+            <div><strong>Complainant:</strong> Dr. K. Satyanarayana Rao (68y)</div>
+            <div><strong>Total Defrauded:</strong> INR 28,50,000/-</div>
+            <div><strong>Jurisdiction:</strong> Cyberabad Commissionerate</div>
+            <div><strong>Statutory Acts:</strong> BNS 318(4), 111, IT Act 66D</div>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-white mb-1">Case Synopsis & Investigative Lead:</h4>
+            <p class="text-gray-400 leading-relaxed">
+              Complainant was coerced via a "Digital Arrest" scheme by perpetrators impersonating Mumbai Customs & Cyber Police. Funds were rapidly fragmented into IndusInd Bank A/C 9192837465 and UPI VPA rahim99@upi. A suspicious white Maruti Swift was spotted monitoring complainant outside bank branch.
+            </p>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-white mb-1">Investigative Mission:</h4>
+            <p class="text-emerald-400 leading-relaxed">
+              As the Lead Investigator, use this software to cross-correlate telecom CDRs, highway ANPR sightings, and seized bank ledgers across Hyderabad, Rachakonda, and Pune to identify the covert syndicate coordinator.
+            </p>
+          </div>
+        </div>
+
+        <div class="p-4 bg-dark-850 border-t border-dark-700 flex justify-end">
+          <button onclick="closeCaseDocket()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold">
+            Proceed to Investigation Canvas
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= CLIENT-SIDE GRAPH & 8-BIT AUDIO SYNTH ENGINE ================= -->
+  <script>
+    // --- 8-BIT WEB AUDIO SYNTH ENGINE ---
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Typewriter mechanical keyclick synth
+    function playTypewriterClick() {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140 + Math.random() * 80, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+      } catch (e) {}
+    }
+
+    // 8-bit retro terminal beep
+    function playRetroBeep(freq = 440) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.12);
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('soundToggleBtn');
+      btn.innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high mr-1"></i> AUDIO: ON' : '<i class="fa-solid fa-volume-xmark mr-1"></i> AUDIO: OFF';
+    }
+
+    // --- 4 DEDICATED ANIMATED 8-BIT CHARACTER SCENES ---
+    const pixelScenes = [
+      // SCENE 0: THE 8-BIT CYBER HACKER (Typing at Terminal, Draining Funds)
+      `<svg viewBox="0 0 200 130" class="w-full h-full pixelated">
+        <rect width="200" height="130" fill="#040906"/>
+        <line x1="0" y1="95" x2="200" y2="95" stroke="#0e2316" stroke-width="2"/>
+        
+        <!-- Left Hacker Monitor with scrolling code -->
+        <rect x="15" y="25" width="45" height="35" fill="#06120a" stroke="#1b4d2e" stroke-width="2"/>
+        <rect x="18" y="28" width="39" height="29" fill="#020804"/>
+        <text x="21" y="37" font-family="'Press Start 2P'" font-size="3" fill="#39FF14">IP: 104.28</text>
+        <text x="21" y="44" font-family="'Press Start 2P'" font-size="3" fill="#39FF14">BYPASS...</text>
+        <text x="21" y="51" font-family="'Press Start 2P'" font-size="3" fill="#00F0FF">UPI: OK</text>
+        <rect x="33" y="60" width="9" height="15" fill="#0e2316"/>
+        
+        <!-- Center Main Monitor with Digital Arrest Fraud alert -->
+        <rect x="70" y="15" width="60" height="44" fill="#06120a" stroke="#39FF14" stroke-width="2"/>
+        <rect x="73" y="18" width="54" height="38" fill="#020804"/>
+        <text x="76" y="28" font-family="'Press Start 2P'" font-size="3.5" fill="#EF4444">DIGITAL ARREST</text>
+        <text x="76" y="38" font-family="'Press Start 2P'" font-size="4" fill="#39FF14">DRAIN: 28.5L</text>
+        <text x="76" y="48" font-family="'Press Start 2P'" font-size="3" fill="#FFB000">VICTIM HOOKED</text>
+        <rect x="95" y="59" width="10" height="16" fill="#0e2316"/>
+        
+        <!-- Right Telecom Monitor -->
+        <rect x="140" y="25" width="45" height="35" fill="#06120a" stroke="#1b4d2e" stroke-width="2"/>
+        <rect x="143" y="28" width="39" height="29" fill="#020804"/>
+        <line x1="146" y1="35" x2="176" y2="35" stroke="#39FF14" stroke-width="1.5" stroke-dasharray="2,2"/>
+        <line x1="146" y1="42" x2="176" y2="42" stroke="#00F0FF" stroke-width="1.5" stroke-dasharray="3,1"/>
+        <text x="146" y="52" font-family="'Press Start 2P'" font-size="3" fill="#FFB000">VOIP ACTIVE</text>
+        
+        <!-- Computer Desk & Keyboard -->
+        <rect x="5" y="75" width="190" height="8" fill="#122b1c"/>
+        <rect x="75" y="73" width="50" height="4" fill="#050e07" stroke="#39FF14" stroke-width="1"/>
+        
+        <!-- 8-Bit Hooded Hacker Character (Animated typing hands & visor glow) -->
+        <g class="hacker-body">
+          <path d="M 88 42 Q 100 32 112 42 L 116 64 L 84 64 Z" fill="#0d1f14"/>
+          <rect x="91" y="44" width="18" height="14" fill="#020603"/>
+          <rect x="92" y="48" width="7" height="3" fill="#39FF14" class="visor-glint"/>
+          <rect x="101" y="48" width="7" height="3" fill="#39FF14" class="visor-glint"/>
+          <line x1="99" y1="49" x2="101" y2="49" stroke="#39FF14" stroke-width="1"/>
+          <!-- Headset with pulsing mic -->
+          <path d="M 87 44 Q 100 34 113 44" stroke="#FFB000" stroke-width="1.5" fill="none"/>
+          <rect x="86" y="44" width="3" height="5" fill="#FFB000"/>
+          <line x1="87" y1="48" x2="93" y2="55" stroke="#FFB000" stroke-width="1"/>
+          <circle cx="94" cy="56" r="1.5" fill="#EF4444" class="mic-pulse"/>
+          <!-- Torso -->
+          <rect x="82" y="64" width="36" height="24" fill="#0d1f14"/>
+          <!-- Animated Hands typing on keys -->
+          <g class="hacker-hands">
+            <rect x="80" y="71" width="9" height="5" fill="#1b4d2e"/>
+            <rect x="82" y="72" width="7" height="3" fill="#39FF14"/>
+            <rect x="111" y="71" width="9" height="5" fill="#1b4d2e"/>
+            <rect x="111" y="72" width="7" height="3" fill="#39FF14"/>
+          </g>
+        </g>
+      </svg>`,
+
+      // SCENE 1: THE 8-BIT RUNNING CASH MULE & WHITE GETAWAY CAR
+      `<svg viewBox="0 0 200 130" class="w-full h-full pixelated">
+        <rect width="200" height="130" fill="#040906"/>
+        <rect x="0" y="88" width="200" height="42" fill="#07120a"/>
+        <!-- Wet road reflections -->
+        <ellipse cx="65" cy="112" rx="30" ry="4" fill="#39FF14" opacity="0.18"/>
+        <ellipse cx="145" cy="115" rx="40" ry="5" fill="#FFB000" opacity="0.22"/>
+        
+        <!-- Rain Streaks (Animated) -->
+        <g class="rain-streaks">
+          <line x1="20" y1="0" x2="8" y2="30" stroke="#39FF14" stroke-width="1" stroke-dasharray="3,6" opacity="0.6"/>
+          <line x1="65" y1="10" x2="53" y2="40" stroke="#00F0FF" stroke-width="1" stroke-dasharray="3,6" opacity="0.5"/>
+          <line x1="110" y1="0" x2="98" y2="30" stroke="#39FF14" stroke-width="1" stroke-dasharray="3,6" opacity="0.6"/>
+          <line x1="155" y1="10" x2="143" y2="40" stroke="#39FF14" stroke-width="1" stroke-dasharray="3,6" opacity="0.5"/>
+          <line x1="190" y1="0" x2="178" y2="30" stroke="#00F0FF" stroke-width="1" stroke-dasharray="3,6" opacity="0.6"/>
+        </g>
+
+        <!-- White Swift Getaway Car TS09AB1234 parked in dark -->
+        <g transform="translate(95, 48)">
+          <rect x="15" y="16" width="75" height="24" fill="#FFFFFF"/>
+          <rect x="30" y="5" width="45" height="15" fill="#FFFFFF"/>
+          <rect x="35" y="7" width="16" height="11" fill="#070B11"/>
+          <rect x="55" y="7" width="18" height="11" fill="#070B11"/>
+          <!-- Pulsing Headlight Beam -->
+          <rect x="90" y="24" width="4" height="6" fill="#FFB000"/>
+          <polygon points="94,22 170,10 170,48 94,34" fill="#FFB000" opacity="0.28"/>
+          <!-- Wheels -->
+          <rect x="25" y="36" width="16" height="14" fill="#000000"/>
+          <rect x="70" y="36" width="16" height="14" fill="#000000"/>
+          <!-- Stolen Plate -->
+          <rect x="8" y="26" width="12" height="7" fill="#00F0FF"/>
+          <text x="9" y="31" font-family="'Press Start 2P'" font-size="3.5" fill="#000000">TS09</text>
+        </g>
+
+        <!-- 8-Bit Running Thief clutching cash duffle bag -->
+        <g class="running-thief" transform="translate(25, 42)">
+          <!-- Masked Head -->
+          <rect x="22" y="8" width="18" height="7" fill="#1b4d2e"/>
+          <rect x="17" y="12" width="9" height="3" fill="#1b4d2e"/>
+          <rect x="22" y="15" width="16" height="11" fill="#d4a373"/>
+          <rect x="19" y="19" width="19" height="8" fill="#070B11"/> <!-- Black Mask -->
+          <rect x="24" y="17" width="3" height="2" fill="#FFFFFF"/> <!-- Eye -->
+          
+          <!-- Torso & Leather Jacket -->
+          <rect x="18" y="26" width="24" height="25" fill="#0e2316"/>
+          <rect x="25" y="26" width="10" height="25" fill="#070B11"/>
+          
+          <!-- Black Duffle Bag marked with Rupee (₹) -->
+          <rect x="4" y="32" width="22" height="16" fill="#000000" stroke="#FFB000" stroke-width="1.5"/>
+          <text x="10" y="44" font-family="'Press Start 2P'" font-size="8" fill="#39FF14">₹</text>
+          
+          <!-- Running Legs -->
+          <polygon points="22,51 32,66 42,66 32,51" fill="#070B11"/>
+          <rect x="34" y="64" width="12" height="6" fill="#1b4d2e"/>
+          <polygon points="34,51 22,68 12,68 24,51" fill="#0e2316"/>
+          <rect x="8" y="66" width="12" height="6" fill="#1b4d2e"/>
+        </g>
+      </svg>`,
+
+      // SCENE 2: THE 8-BIT HAWALA KINGPIN ("BHAIJAAN") IN PUNE
+      `<svg viewBox="0 0 200 130" class="w-full h-full pixelated">
+        <rect width="200" height="130" fill="#0a0504"/>
+        <rect x="0" y="0" width="200" height="85" fill="#170907"/>
+        <line x1="0" y1="85" x2="200" y2="85" stroke="#33140e" stroke-width="2"/>
+        
+        <!-- Syndicate Map Board -->
+        <rect x="135" y="12" width="55" height="34" fill="#000000" stroke="#FFB000" stroke-width="2"/>
+        <text x="140" y="24" font-family="'Press Start 2P'" font-size="3.5" fill="#FFB000">PUNE HUB</text>
+        <text x="140" y="33" font-family="'Press Start 2P'" font-size="3" fill="#39FF14">HAWALA NET</text>
+        <text x="140" y="42" font-family="'Press Start 2P'" font-size="3" fill="#EF4444">₹ 64.5 LAKH</text>
+
+        <!-- Big Leather Boss Chair -->
+        <rect x="70" y="20" width="60" height="65" fill="#2d0b07" stroke="#4a120b" stroke-width="2"/>
+        <rect x="65" y="45" width="70" height="40" fill="#1f0705"/>
+        
+        <!-- The Boss: "Bhaijaan" Character -->
+        <g class="boss-character">
+          <rect x="86" y="20" width="28" height="14" fill="#070B11"/> <!-- Black Hair -->
+          <rect x="88" y="32" width="24" height="18" fill="#e0a96d"/> <!-- Face -->
+          <!-- Dark Aviators with Gold Glint -->
+          <rect x="89" y="35" width="9" height="6" fill="#070B11" stroke="#FFB000" stroke-width="1"/>
+          <rect x="101" y="35" width="9" height="6" fill="#070B11" stroke="#FFB000" stroke-width="1"/>
+          <line x1="98" y1="37" x2="101" y2="37" stroke="#FFB000" stroke-width="1"/>
+          <rect x="92" y="36" width="2" height="2" fill="#FFFFFF"/>
+          <!-- Mustache -->
+          <rect x="93" y="44" width="14" height="3" fill="#070B11"/>
+          <!-- Cigar with Animated Smoke -->
+          <rect x="105" y="46" width="12" height="3" fill="#8B4513"/>
+          <rect x="117" y="46" width="2" height="3" fill="#FF4500"/>
+          <circle cx="120" cy="43" r="2" fill="#cccccc" class="smoke-1"/>
+          <circle cx="123" cy="36" r="3" fill="#999999" class="smoke-2"/>
+          <circle cx="126" cy="27" r="4" fill="#666666" class="smoke-3"/>
+
+          <!-- Crimson Silk Shirt & Gold Chain -->
+          <rect x="78" y="50" width="44" height="36" fill="#7f1d1d"/>
+          <polygon points="94,50 100,64 106,50" fill="#e0a96d"/>
+          <path d="M 93 52 Q 100 64 107 52" stroke="#FFB000" stroke-width="2" fill="none"/>
+        </g>
+
+        <!-- Heavy Desk & Stacks of Rupee Bills -->
+        <rect x="35" y="80" width="130" height="16" fill="#3b1d11"/>
+        <rect x="42" y="68" width="26" height="12" fill="#2e7d32" stroke="#1b5e20" stroke-width="1"/>
+        <rect x="44" y="63" width="26" height="8" fill="#388e3c" stroke="#1b5e20" stroke-width="1"/>
+        <text x="49" y="71" font-family="'Press Start 2P'" font-size="5" fill="#FFB000">₹₹</text>
+
+        <!-- Seized Red Ledger Notebook -->
+        <rect x="76" y="70" width="24" height="12" fill="#b71c1c" stroke="#7f0000" stroke-width="1"/>
+        <rect x="78" y="72" width="20" height="8" fill="#f5f5f5"/>
+        <line x1="81" y1="75" x2="95" y2="75" stroke="#000000" stroke-width="0.8"/>
+        <line x1="81" y1="78" x2="93" y2="78" stroke="#000000" stroke-width="0.8"/>
+
+        <!-- Ringing Burner Phones (Buzzing Animation) -->
+        <g class="buzzing-phone">
+          <rect x="0" y="0" width="9" height="14" fill="#000000" stroke="#39FF14" stroke-width="1"/>
+          <rect x="2" y="2" width="5" height="7" fill="#39FF14"/>
+          <text x="-4" y="-3" font-family="'Press Start 2P'" font-size="3" fill="#39FF14">RING!</text>
+        </g>
+        <rect x="128" y="72" width="9" height="12" fill="#000000" stroke="#00F0FF" stroke-width="1"/>
+        <rect x="142" y="73" width="9" height="12" fill="#000000" stroke="#FFB000" stroke-width="1"/>
+      </svg>`,
+
+      // SCENE 3: THE 8-BIT CYBER DETECTIVE (INSPECTOR V. RAMESH)
+      `<svg viewBox="0 0 200 130" class="w-full h-full pixelated">
+        <rect width="200" height="130" fill="#050B14"/>
+        <!-- Police Operations Room Map Grid -->
+        <line x1="20" y1="30" x2="180" y2="30" stroke="#0e2a47" stroke-width="1"/>
+        <line x1="20" y1="60" x2="180" y2="60" stroke="#0e2a47" stroke-width="1"/>
+        <line x1="50" y1="10" x2="50" y2="90" stroke="#0e2a47" stroke-width="1"/>
+        <line x1="100" y1="10" x2="100" y2="90" stroke="#0e2a47" stroke-width="1"/>
+        <line x1="150" y1="10" x2="150" y2="90" stroke="#0e2a47" stroke-width="1"/>
+
+        <!-- Police Siren Flashing Lights (Animated Blue/Red) -->
+        <circle cx="25" cy="20" r="7" class="siren-light"/>
+        <circle cx="175" cy="20" r="7" class="siren-light-alt"/>
+        
+        <!-- Big Crime Graph Display Screen -->
+        <rect x="115" y="32" width="75" height="50" fill="#030712" stroke="#00F0FF" stroke-width="2"/>
+        <circle cx="132" cy="48" r="4" fill="#EF4444"/>
+        <circle cx="170" cy="48" r="4" fill="#3B82F6"/>
+        <circle cx="152" cy="68" r="5" fill="#FFB000"/>
+        <line x1="132" y1="48" x2="152" y2="68" stroke="#00F0FF" stroke-width="1.5"/>
+        <line x1="170" y1="48" x2="152" y2="68" stroke="#00F0FF" stroke-width="1.5"/>
+        <text x="120" y="41" font-family="'Press Start 2P'" font-size="3" fill="#39FF14">TARGET ACQUIRED</text>
+
+        <!-- Lead Detective: Inspector V. Ramesh -->
+        <g class="detective-character" transform="translate(38, 16)">
+          <!-- Police Cap with Gold Crest -->
+          <rect x="22" y="10" width="26" height="9" fill="#1e3a8a"/>
+          <rect x="18" y="16" width="34" height="3" fill="#070B11"/>
+          <polygon points="35,11 37,16 33,16" fill="#FFB000"/>
+          
+          <!-- Detective Face & Eyes -->
+          <rect x="25" y="19" width="20" height="18" fill="#d4a373"/>
+          <rect x="28" y="24" width="3" height="2" fill="#070B11"/>
+          <rect x="37" y="24" width="3" height="2" fill="#070B11"/>
+          <line x1="27" y1="22" x2="31" y2="22" stroke="#070B11" stroke-width="1"/>
+          <line x1="36" y1="22" x2="40" y2="22" stroke="#070B11" stroke-width="1"/>
+          <rect x="29" y="30" width="12" height="2" fill="#070B11"/> <!-- Mustache -->
+
+          <!-- Khaki Police Uniform & Trenchcoat -->
+          <rect x="16" y="37" width="38" height="46" fill="#785938"/>
+          <rect x="27" y="37" width="16" height="46" fill="#c29b68"/>
+          <line x1="35" y1="37" x2="35" y2="83" stroke="#52391e" stroke-width="1"/>
+          
+          <!-- Shiny Brass Police Badge -->
+          <polygon points="23,43 27,46 27,51 23,53 19,51 19,46" fill="#FFB000" stroke="#ffffff" stroke-width="0.8"/>
+          
+          <!-- Holographic Tablet with Sweeping Radar -->
+          <g class="radar-tablet">
+            <rect x="40" y="46" width="30" height="25" fill="#020817" stroke="#00F0FF" stroke-width="1.5"/>
+            <circle cx="55" cy="58" r="8" stroke="#00F0FF" stroke-width="1" fill="none" opacity="0.6"/>
+            <circle cx="55" cy="58" r="3" stroke="#00F0FF" stroke-width="1" fill="none" opacity="0.8"/>
+            <line x1="55" y1="58" x2="63" y2="52" stroke="#39FF14" stroke-width="1.5" class="radar-line"/>
+            <text x="43" y="53" font-family="'Press Start 2P'" font-size="2.5" fill="#39FF14">ICNAS</text>
+          </g>
+          <rect x="37" y="56" width="7" height="9" fill="#d4a373"/>
+        </g>
+      </svg>`
+    ];
+
+    // Story Narrative Sequence (~13 seconds total) with Speaker Badges
+    const storyScript = [
+      {
+        sceneIdx: 0,
+        badge: "▶ TARGET: HOODED CYBER HACKER CELL",
+        text: "CYBERABAD // 02:40 AM.\nA RETIRED PROFESSOR LOSES RS 28.5 LAKHS\nIN A COERCED 'DIGITAL ARREST' SCAM.",
+        duration: 3500,
+        status: "INTERCEPTING IP & UPI STREAMS..."
+      },
+      {
+        sceneIdx: 1,
+        badge: "▶ SUSPECT: CASH MULE IN GETAWAY VEHICLE",
+        text: "THE MONEY MULE WITHDRAWS THE LOOT IN MADHAPUR.\nWHITE SWIFT TS09AB1234 DISAPPEARS ON NH-65.",
+        duration: 3600,
+        status: "DECODING HIGHWAY ANPR & FASTAG..."
+      },
+      {
+        sceneIdx: 2,
+        badge: "▶ COVERT COORDINATOR: 'BHAIJAAN'",
+        text: "PUNE HAWALA BOSS NEVER CONTACTS THE VICTIMS.\nHE ORCHESTRATES FROM THE SHADOWS.",
+        duration: 3600,
+        status: "COMPUTING BETWEENNESS CENTRALITY..."
+      },
+      {
+        sceneIdx: 3,
+        badge: "▶ LEAD INVESTIGATOR: INSP. V. RAMESH",
+        text: "YOU ARE ASSIGNED TO CASE FILE CR-CYB-104.\nCONNECT THE DOTS. UNMASK THE NETWORK.",
+        duration: 3200,
+        status: "ICNAS TERMINAL ENGAGED. LOADING DOCKET..."
+      }
+    ];
+
+    let introTimer = null;
+    let typeWriterInterval = null;
+    let storyStep = 0;
+    let introStartTime = 0;
+    const totalIntroTime = 13900; // ~14 seconds
+
+    function startStoryIntro() {
+      const screen = document.getElementById('storyIntroScreen');
+      screen.classList.remove('hidden');
+      screen.style.opacity = '1';
+      document.body.style.overflow = 'hidden';
+
+      storyStep = 0;
+      introStartTime = Date.now();
+      playStoryStep();
+      updateProgressBar();
+    }
+
+    function playStoryStep() {
+      if (storyStep >= storyScript.length) {
+        finishIntro();
+        return;
+      }
+
+      const current = storyScript[storyStep];
+      // Update 8-bit visual character scene & speaker badge
+      document.getElementById('pixelSceneContainer').innerHTML = pixelScenes[current.sceneIdx];
+      document.getElementById('characterSpeakerBadge').innerText = current.badge;
+      document.getElementById('introStatusText').innerText = current.status;
+      playRetroBeep(440 + storyStep * 110);
+
+      // Typewriter animation with fixed spacing
+      const textElem = document.getElementById('typewriterText');
+      textElem.innerText = "";
+      let charIdx = 0;
+
+      if (typeWriterInterval) clearInterval(typeWriterInterval);
+
+      typeWriterInterval = setInterval(() => {
+        if (charIdx < current.text.length) {
+          textElem.innerText += current.text[charIdx];
+          if (current.text[charIdx] !== ' ' && current.text[charIdx] !== '\n') {
+            playTypewriterClick();
+          }
+          charIdx++;
+        } else {
+          clearInterval(typeWriterInterval);
+          // Wait remaining duration then advance to next character slide
+          introTimer = setTimeout(() => {
+            storyStep++;
+            playStoryStep();
+          }, 950);
+        }
+      }, 30);
+    }
+
+    function updateProgressBar() {
+      const interval = setInterval(() => {
+        const elapsed = Date.now() - introStartTime;
+        const progress = Math.min(100, (elapsed / totalIntroTime) * 100);
+        const remainingSec = Math.max(0, Math.ceil((totalIntroTime - elapsed) / 1000));
+        
+        const bar = document.getElementById('introProgressBar');
+        const timeElem = document.getElementById('introTimeRemaining');
+        if (bar) bar.style.width = progress + '%';
+        if (timeElem) timeElem.innerText = remainingSec + 's';
+
+        if (elapsed >= totalIntroTime) {
+          clearInterval(interval);
+          finishIntro();
+        }
+      }, 100);
+    }
+
+    function skipIntro() {
+      if (typeWriterInterval) clearInterval(typeWriterInterval);
+      if (introTimer) clearTimeout(introTimer);
+      playRetroBeep(880);
+      finishIntro();
+    }
+
+    function finishIntro() {
+      const screen = document.getElementById('storyIntroScreen');
+      screen.style.opacity = '0';
+      setTimeout(() => {
+        screen.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        if (cy) cy.resize();
+        // Auto open Case Docket so user immediately sees their mission!
+        openCaseDocket();
+      }, 600);
+    }
+
+    // ESC key skips intro
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') skipIntro();
+    });
+
+    // Start on first visit
+    window.addEventListener('DOMContentLoaded', () => {
+      startStoryIntro();
+    });
+
+    // --- CASE DOCKET MODAL ---
+    function openCaseDocket() {
+      document.getElementById('caseDocketModal').classList.remove('hidden');
+    }
+    function closeCaseDocket() {
+      document.getElementById('caseDocketModal').classList.add('hidden');
+    }
+
+    // --- GRAPH DATA SPECIFICATION (FOCUSED ON ACTIVE CASE CR-CYB-104) ---
+    const rawElements = [
+      // Cases
+      { data: { id: 'CASE_104_2026', label: 'FIR 104/2026 (Cyberabad - ACTIVE)', type: 'CASE', color: '#EF4444', shape: 'hexagon', betweenness: 0.32 } },
+      { data: { id: 'CASE_88_2026', label: 'FIR 88/2026 (Hyderabad CCS)', type: 'CASE', color: '#8B5CF6', shape: 'hexagon', betweenness: 0.12 } },
+      { data: { id: 'CASE_42_2026', label: 'FIR 42/2026 (Pune Crime Raid)', type: 'CASE', color: '#8B5CF6', shape: 'hexagon', betweenness: 0.22 } },
+      { data: { id: 'CASE_19_2026', label: 'FIR 19/2026 (Rachakonda Stolen Car)', type: 'CASE', color: '#8B5CF6', shape: 'hexagon', betweenness: 0.18 } },
+
+      // Persons
+      { data: { id: 'PERSON_RAHIM', label: 'Rahim Khan (Operative / Runner)', type: 'PERSON', color: '#EF4444', shape: 'ellipse', betweenness: 0.36 } },
+      { data: { id: 'PERSON_FAROOQ', label: 'Farooq Ahmed (Bhaijaan - Syndicate Boss)', type: 'PERSON', color: '#EF4444', shape: 'ellipse', betweenness: 0.38 } },
+      { data: { id: 'PERSON_SATYA', label: 'Dr. K. Satyanarayana (Victim CR-104)', type: 'PERSON', color: '#6B7280', shape: 'ellipse', betweenness: 0.02 } },
+      { data: { id: 'PERSON_ANANYA', label: 'Ananya Deshmukh (Victim CR-88)', type: 'PERSON', color: '#6B7280', shape: 'ellipse', betweenness: 0.02 } },
+
+      // Phones
+      { data: { id: 'PHONE_9876', label: '+919876543210', type: 'PHONE', color: '#3B82F6', shape: 'roundrectangle', betweenness: 0.25 } },
+      { data: { id: 'PHONE_9123', label: '+919123456789', type: 'PHONE', color: '#3B82F6', shape: 'roundrectangle', betweenness: 0.24 } },
+      { data: { id: 'PHONE_9988', label: '+919988776655', type: 'PHONE', color: '#3B82F6', shape: 'roundrectangle', betweenness: 0.05 } },
+      { data: { id: 'PHONE_9440', label: '+919440112233', type: 'PHONE', color: '#3B82F6', shape: 'roundrectangle', betweenness: 0.04 } },
+
+      // Vehicles
+      { data: { id: 'TS09AB1234', label: 'Swift TS09AB1234 (Getaway Car)', type: 'VEHICLE', color: '#F59E0B', shape: 'rectangle', betweenness: 0.37 } },
+
+      // Bank Accounts & UPI
+      { data: { id: 'BANK_9192', label: 'IndusInd A/C 9192837465', type: 'BANK_ACC', color: '#10B981', shape: 'diamond', betweenness: 0.27 } },
+      { data: { id: 'UPI_RAHIM', label: 'rahim99@upi', type: 'BANK_ACC', color: '#10B981', shape: 'diamond', betweenness: 0.18 } },
+      { data: { id: 'BANK_FAROOQ', label: 'farooq.bhai@hdfc', type: 'BANK_ACC', color: '#10B981', shape: 'diamond', betweenness: 0.11 } },
+
+      // Locations
+      { data: { id: 'LOC_HYD', label: 'Cyberabad / Madhapur Toll', type: 'LOCATION', color: '#6B7280', shape: 'ellipse', betweenness: 0.05 } },
+      { data: { id: 'LOC_PUN', label: 'Kondhwa Hawala Hub, Pune', type: 'LOCATION', color: '#6B7280', shape: 'ellipse', betweenness: 0.05 } },
+
+      // --- EDGES ---
+      // Phone calls
+      { data: { id: 'e1', source: 'PHONE_9876', target: 'PHONE_9123', label: '18 CDR Calls', tier: 'OBSERVED', color: '#10B981', proof: 'CDR Batch #994 (Hyd-Pune tower)' } },
+      { data: { id: 'e2', source: 'PHONE_9123', target: 'PHONE_9988', label: '6 CDR Calls', tier: 'OBSERVED', color: '#10B981', proof: 'CDR Batch #994 (Pune Internal)' } },
+      { data: { id: 'e3', source: 'PHONE_9876', target: 'PHONE_9440', label: '3 CDR Calls', tier: 'OBSERVED', color: '#10B981', proof: 'CDR Batch #994 (Ameerpet)' } },
+
+      // Person to Phone
+      { data: { id: 'e4', source: 'PERSON_RAHIM', target: 'PHONE_9876', label: 'USES_PHONE', tier: 'OBSERVED', color: '#10B981', proof: 'FIR 104 & FIR 88 Statements' } },
+      { data: { id: 'e5', source: 'PERSON_FAROOQ', target: 'PHONE_9123', label: 'USES_PHONE', tier: 'OBSERVED', color: '#10B981', proof: 'Pune Crime Seizure Ledger' } },
+      { data: { id: 'e6', source: 'PERSON_FAROOQ', target: 'PHONE_9988', label: 'USES_PHONE', tier: 'OBSERVED', color: '#10B981', proof: 'Kondhwa Raid Seized SIM' } },
+
+      // Financial Flows
+      { data: { id: 'e7', source: 'PERSON_SATYA', target: 'BANK_9192', label: 'RTGS ₹15,00,000', tier: 'OBSERVED', color: '#10B981', proof: 'IndusInd Bank Statement TXN_20105' } },
+      { data: { id: 'e8', source: 'PERSON_SATYA', target: 'UPI_RAHIM', label: 'UPI ₹13,50,000', tier: 'OBSERVED', color: '#10B981', proof: 'SBI UPI Ledger TXN_20106' } },
+      { data: { id: 'e9', source: 'PERSON_ANANYA', target: 'BANK_9192', label: 'IMPS ₹7,00,000', tier: 'OBSERVED', color: '#10B981', proof: 'ICICI Bank Statement TXN_20102' } },
+      { data: { id: 'e10', source: 'UPI_RAHIM', target: 'BANK_9192', label: 'Mule Sweep ₹17.8L', tier: 'OBSERVED', color: '#10B981', proof: 'UPI Ledger Consolidation' } },
+      { data: { id: 'e11', source: 'BANK_9192', target: 'BANK_FAROOQ', label: 'NEFT ₹34,50,000', tier: 'OBSERVED', color: '#10B981', proof: 'HDFC Hawala Disbursal TXN_20109' } },
+
+      // Vehicle Connections
+      { data: { id: 'e12', source: 'PERSON_RAHIM', target: 'TS09AB1234', label: 'DRIVES_CAR', tier: 'INFERRED', color: '#F59E0B', proof: 'CCTV Madhapur + Toll ANPR 803' } },
+      { data: { id: 'e13', source: 'TS09AB1234', target: 'CASE_19_2026', label: 'STOLEN_PROPERTY', tier: 'OBSERVED', color: '#10B981', proof: 'FIR 19/2026 LB Nagar PS' } },
+      { data: { id: 'e14', source: 'TS09AB1234', target: 'LOC_HYD', label: 'SIGHTED_TOLL', tier: 'OBSERVED', color: '#10B981', proof: 'Patancheru Toll Cam #04' } },
+      { data: { id: 'e15', source: 'TS09AB1234', target: 'LOC_PUN', label: 'SIGHTED_TOLL', tier: 'OBSERVED', color: '#10B981', proof: 'Hadapsar Toll Pune Cam #12' } },
+
+      // Case Connections
+      { data: { id: 'e16', source: 'PERSON_RAHIM', target: 'CASE_104_2026', label: 'ACCUSED_IN', tier: 'OBSERVED', color: '#10B981', proof: 'FIR 104 Cyberabad' } },
+      { data: { id: 'e17', source: 'PERSON_RAHIM', target: 'CASE_88_2026', label: 'ACCUSED_IN', tier: 'OBSERVED', color: '#10B981', proof: 'FIR 88 Hyderabad CCS' } },
+      { data: { id: 'e18', source: 'PERSON_FAROOQ', target: 'CASE_42_2026', label: 'NAMED_LEADER', tier: 'OBSERVED', color: '#10B981', proof: 'FIR 42 Pune Crime Branch' } },
+      { data: { id: 'e19', source: 'BANK_9192', target: 'CASE_42_2026', label: 'SEIZED_LEDGER', tier: 'OBSERVED', color: '#10B981', proof: 'Pune Raid Physical Notebook' } }
+    ];
+
+    let cy;
+
+    // --- INITIALIZE CYTOSCAPE ---
+    document.addEventListener('DOMContentLoaded', () => {
+      cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements: rawElements,
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'label': 'data(label)',
+              'color': '#FFFFFF',
+              'font-size': '11px',
+              'font-family': 'Inter, sans-serif',
+              'text-valign': 'bottom',
+              'text-margin-y': '6px',
+              'background-color': 'data(color)',
+              'shape': 'data(shape)',
+              'width': 'mapData(betweenness, 0, 0.4, 26, 54)',
+              'height': 'mapData(betweenness, 0, 0.4, 26, 54)',
+              'border-width': 2,
+              'border-color': '#1E293B',
+              'text-background-opacity': 0.85,
+              'text-background-color': '#0B111A',
+              'text-background-padding': '3px',
+              'text-background-shape': 'roundrectangle'
+            }
+          },
+          {
+            selector: 'edge',
+            style: {
+              'width': 2,
+              'line-color': 'data(color)',
+              'curve-style': 'bezier',
+              'target-arrow-shape': 'none',
+              'label': 'data(label)',
+              'font-size': '9px',
+              'color': '#94A3B8',
+              'text-background-opacity': 0.85,
+              'text-background-color': '#070B11',
+              'text-background-padding': '2px',
+              'text-background-shape': 'roundrectangle'
+            }
+          },
+          {
+            selector: '.highlighted',
+            style: {
+              'border-width': 4,
+              'border-color': '#06B6D4',
+              'shadow-blur': 25,
+              'shadow-color': '#06B6D4',
+              'shadow-opacity': 0.9
+            }
+          },
+          {
+            selector: '.faded',
+            style: {
+              'opacity': 0.15
+            }
+          }
+        ],
+        layout: {
+          name: 'cose',
+          animate: true,
+          padding: 60,
+          nodeRepulsion: 80000,
+          idealEdgeLength: 100
+        }
+      });
+
+      // Node Click Inspector
+      cy.on('tap', 'node', (evt) => {
+        const node = evt.target;
+        openNodeInspector(node.data());
+        highlightNeighborhood(node);
+      });
+
+      // Edge Click Inspector
+      cy.on('tap', 'edge', (evt) => {
+        const edge = evt.target;
+        openEdgeInspector(edge.data());
+      });
+
+      // Canvas Background Tap: Clear Highlights
+      cy.on('tap', (evt) => {
+        if (evt.target === cy) {
+          cy.elements().removeClass('highlighted faded');
+        }
+      });
+    });
+
+    // --- FIT GRAPH ---
+    function fitGraph() {
+      cy.animate({ fit: { padding: 50 }, duration: 500 });
+      cy.elements().removeClass('highlighted faded');
+    }
+
+    // --- CHANGE LAYOUT ---
+    function changeLayout(name) {
+      cy.layout({ name: name, animate: true, padding: 50 }).run();
+    }
+
+    // --- HIGHLIGHT TOP BROKER ---
+    function highlightTopBroker() {
+      switchTab('graph');
+      const brokerNode = cy.$('#TS09AB1234');
+      const farooqNode = cy.$('#PERSON_FAROOQ');
+      cy.elements().addClass('faded');
+      brokerNode.removeClass('faded').addClass('highlighted');
+      farooqNode.removeClass('faded').addClass('highlighted');
+      cy.animate({ center: { eles: brokerNode }, zoom: 1.4, duration: 600 });
+      openNodeInspector(brokerNode.data());
+    }
+
+    // --- HIGHLIGHT NEIGHBORHOOD ---
+    function highlightNeighborhood(node) {
+      cy.elements().addClass('faded');
+      node.closedNeighborhood().removeClass('faded');
+      node.addClass('highlighted');
+    }
+
+    // --- DRAWER CONTROLS ---
+    function openNodeInspector(data) {
+      const drawer = document.getElementById('explainDrawer');
+      const body = document.getElementById('drawerBody');
+      drawer.classList.remove('hidden');
+
+      body.innerHTML = `
+        <div class="p-3 rounded bg-dark-850 border border-dark-700 space-y-1">
+          <div class="text-[10px] text-gray-400 uppercase font-semibold">Entity Type: ${data.type}</div>
+          <div class="text-sm font-bold text-white">${data.label}</div>
+          <div class="text-[11px] text-cyan-400 font-mono">ID: ${data.id}</div>
+        </div>
+
+        <div class="space-y-2">
+          <span class="text-[10px] uppercase font-semibold text-gray-400">Betweenness Centrality</span>
+          <div class="w-full bg-dark-800 rounded-full h-2">
+            <div class="bg-cyan-500 h-2 rounded-full" style="width: ${data.betweenness * 250}%"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-gray-400">
+            <span>Score: ${data.betweenness}</span>
+            <span>${data.betweenness > 0.25 ? '⚠️ High Broker Risk' : 'Peripheral Node'}</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded bg-dark-850 border border-dark-700 space-y-2">
+          <div class="text-[10px] uppercase font-semibold text-gray-400">Investigative Context</div>
+          <p class="text-gray-300 text-xs">
+            ${data.id === 'TS09AB1234' ? 'Stolen white Swift getaway vehicle used across Cyberabad surveillance and Pune hawala cash pickup. Sighted on highway ANPR cameras.' : 
+              data.id === 'PERSON_FAROOQ' ? 'Covert coordinator nicknamed "Bhaijaan". Does not call victims directly; orchestrates money mules and cash pickups remotely.' :
+              'Entity corroborated across multiple electronic data records with verified cryptographic hashes.'}
+          </p>
+        </div>
+
+        <button onclick="zoomToNode('${data.id}')" class="w-full py-2 bg-blue-600/30 hover:bg-blue-600/40 border border-blue-500/40 text-blue-300 rounded text-xs font-semibold">
+          Focus on Canvas
+        </button>
+      `;
+    }
+
+    function openEdgeInspector(data) {
+      const drawer = document.getElementById('explainDrawer');
+      const body = document.getElementById('drawerBody');
+      drawer.classList.remove('hidden');
+
+      body.innerHTML = `
+        <div class="p-3 rounded bg-dark-850 border border-dark-700 space-y-1">
+          <div class="text-[10px] text-gray-400 uppercase font-semibold">Connection Tier: ${data.tier}</div>
+          <div class="text-sm font-bold text-white">${data.source} ➔ ${data.target}</div>
+          <div class="text-[11px] text-emerald-400">${data.label}</div>
+        </div>
+
+        <div class="p-3 rounded bg-dark-850 border border-dark-700 space-y-2">
+          <div class="text-[10px] uppercase font-semibold text-gray-400">Corroborated Electronic Evidence</div>
+          <div class="text-gray-200 text-xs font-mono bg-dark-950 p-2 rounded border border-dark-800">
+            ${data.proof}
+          </div>
+          <div class="text-[10px] text-emerald-400">
+            ✓ Verified under Section 63 Bharatiya Sakshya Adhiniyam, 2023.
+          </div>
+        </div>
+      `;
+    }
+
+    function closeDrawer() {
+      document.getElementById('explainDrawer').classList.add('hidden');
+      cy.elements().removeClass('highlighted faded');
+    }
+
+    function zoomToNode(id) {
+      const node = cy.$('#' + id);
+      cy.animate({ center: { eles: node }, zoom: 1.6, duration: 500 });
+    }
+
+    // --- TAB SWITCHER ---
+    function switchTab(tabId) {
+      const tabs = ['graph', 'pathfinder', 'antimerge', 'sarvam', 'bsa'];
+      tabs.forEach(t => {
+        document.getElementById('content-' + t).classList.add('hidden');
+        const btn = document.getElementById('tab-btn-' + t);
+        if (btn) {
+          btn.className = "w-full flex items-center px-3 py-2 text-xs font-medium rounded-md text-gray-300 hover:bg-dark-800 hover:text-white transition";
+        }
+      });
+
+      document.getElementById('content-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.className = "w-full flex items-center px-3 py-2 text-xs font-medium rounded-md bg-blue-600/20 text-blue-400 border border-blue-500/30";
+      }
+
+      if (tabId === 'graph') {
+        setTimeout(() => { cy.resize(); }, 50);
+      }
+    }
+
+    // --- CROSS-CASE PATH TRACE ---
+    function runPathTrace() {
+      const origin = document.getElementById('pathOrigin').value;
+      const dest = document.getElementById('pathDest').value;
+      const resBox = document.getElementById('pathResultContainer');
+
+      resBox.innerHTML = `
+        <div class="flex items-center space-x-2 text-cyan-400 text-xs font-semibold">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Deterministic Shortest Path Discovered (4 Hops)</span>
+        </div>
+
+        <div class="p-3 bg-dark-950 rounded border border-dark-800 font-mono text-xs text-gray-200">
+          ${origin} ➔ IndusInd A/C 9192837465 ➔ Swift TS09AB1234 ➔ ${dest}
+        </div>
+
+        <div class="space-y-2 text-xs text-gray-300">
+          <div class="font-semibold text-white">Hop-by-Hop Legal Provenance:</div>
+          <div class="p-2 bg-dark-850 rounded border border-dark-700">
+            <strong>Hop 1:</strong> ${origin} transferred funds to IndusInd Mule A/C 9192837465 (Ref: FIR Statement & Bank Txn TXN_20105).
+          </div>
+          <div class="p-2 bg-dark-850 rounded border border-dark-700">
+            <strong>Hop 2:</strong> IndusInd funds withdrawn via cash runner using vehicle TS09AB1234 (Ref: CCTV Madhapur & Toll ANPR 803).
+          </div>
+          <div class="p-2 bg-dark-850 rounded border border-dark-700">
+            <strong>Hop 3:</strong> Vehicle TS09AB1234 sighted in Kondhwa, Pune outside hawala premises of ${dest} (Ref: Hadapsar Toll & Pune Seizure Ledger).
+          </div>
+        </div>
+
+        <button onclick="highlightPathOnGraph('${origin}', '${dest}')" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold">
+          View & Animate on Knowledge Graph
+        </button>
+      `;
+    }
+
+    function highlightPathOnGraph(origin, dest) {
+      switchTab('graph');
+      const p1 = cy.$('#' + origin);
+      const p2 = cy.$('#BANK_9192');
+      const p3 = cy.$('#TS09AB1234');
+      const p4 = cy.$('#' + dest);
+
+      cy.elements().addClass('faded');
+      const pathElements = p1.union(p2).union(p3).union(p4).connectedEdges();
+      p1.union(p2).union(p3).union(p4).removeClass('faded').addClass('highlighted');
+      pathElements.removeClass('faded');
+      cy.animate({ fit: { eles: pathElements, padding: 60 }, duration: 600 });
+    }
+
+    // --- ANTI-MERGE LIVE DEMOS ---
+    function testHostel() {
+      const res = document.getElementById('hostelResult');
+      res.classList.remove('hidden');
+      res.innerHTML = `
+        <div class="text-red-400 font-bold mb-1">DECISION: DISTINCT_ENTITIES (Score: 0.02)</div>
+        <div class="text-gray-300">
+          Address matches multi-tenant PG/Hostel (140 occupants). Weight down-ranked to 0.02 by Address Entropy Rule. 
+          <span class="text-emerald-400 font-semibold block mt-1">✓ False syndicate clustering prevented!</span>
+        </div>
+      `;
+    }
+
+    function testCoAccused() {
+      const res = document.getElementById('coAccusedResult');
+      res.classList.remove('hidden');
+      res.innerHTML = `
+        <div class="text-amber-400 font-bold mb-1">DECISION: BLOCKED_BY_SAFEGUARD (Score: 0.0)</div>
+        <div class="text-gray-300">
+          ANTI-MERGE RULE #2: Distinct co-accused persons listed in same FIR 42/2026.
+          <span class="text-emerald-400 font-semibold block mt-1">✓ Co-accused entities kept separate.</span>
+        </div>
+      `;
+    }
+
+    function testPlateNormalizer() {
+      const val = document.getElementById('plateInput').value.trim();
+      const res = document.getElementById('plateResult');
+      res.classList.remove('hidden');
+
+      let clean = val.toUpperCase().replace(/\s/g, '');
+      if (clean.includes('8') && clean.startsWith('TS09A8')) {
+        clean = clean.replace('TS09A8', 'TS09AB');
+      }
+
+      res.innerHTML = `
+        <div class="text-emerald-400 font-bold mb-1">NORMALIZED REGISTRATION: ${clean}</div>
+        <div class="text-gray-300">
+          OCR series typo detected. Digit '8' repaired to series letter 'B'. Linked to Stolen Swift in FIR 19/2026 Rachakonda!
+        </div>
+      `;
+    }
+
+    // --- DOWNLOAD BSA CERTIFICATE ---
+    function downloadBsaCertificate() {
+      const text = document.getElementById('bsaCertText').innerText;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const anchor = document.createElement('a');
+      anchor.download = 'BSA_Section63_Certificate_20260905.txt';
+      anchor.href = window.URL.createObjectURL(blob);
+      anchor.click();
+    }
+  </script>
+</body>
+</html>

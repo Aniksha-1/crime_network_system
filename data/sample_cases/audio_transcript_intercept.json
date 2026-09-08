@@ -1,0 +1,22 @@
+{
+  "intercept_id": "CALL_INT_2026_092",
+  "source_file": "call_intercept_20260212_1135.wav",
+  "timestamp": "2026-02-12T11:35:10Z",
+  "target_phone": "+919876543210",
+  "dialed_phone": "+919123456789",
+  "duration_seconds": 420,
+  "asr_engine": "Sarvam AI - Saaras Speech-to-Text (Indic ASR Engine)",
+  "language_detected": "Hinglish / Telugu Code-Mixed (hi-IN / te-IN)",
+  "compliance_audit": "MeitY / Bhashini Indian Sovereign AI Standards",
+  "transcript": "Bhaijaan, party line pe hai. Hyderabad doctor se 28 lakhs ka deal finalize ho gaya. IndusInd account 9192837465 me transfer aa raha hai. Baaki ka amount rahim99@upi pe divide karwayenge. Swift gaadi TS09AB1234 ready hai cash pickup ke liye. Pune drop kab karna hai?",
+  "english_translation": "Bhaijaan, the target is on the line. The 28 lakh deal with the Hyderabad doctor is finalized. Transfer is coming into IndusInd account 9192837465. The remaining amount will be split into rahim99@upi. Swift car TS09AB1234 is ready for cash pickup. When should we drop it in Pune?",
+  "extracted_entities": [
+    {"type": "PERSON_ALIAS", "value": "Bhaijaan", "confidence": 0.95},
+    {"type": "AMOUNT", "value": "INR 28,00,000", "confidence": 0.96},
+    {"type": "BANK_ACCOUNT", "value": "9192837465", "confidence": 0.99},
+    {"type": "UPI_ID", "value": "rahim99@upi", "confidence": 0.99},
+    {"type": "VEHICLE_PLATE", "value": "TS09AB1234", "confidence": 0.98},
+    {"type": "LOCATION", "value": "Pune", "confidence": 0.92},
+    {"type": "LOCATION", "value": "Hyderabad", "confidence": 0.94}
+  ]
+}
