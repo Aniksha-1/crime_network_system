@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ICNAS - Case File CR-CYB-104: Operation Cyber-Spider</title>
+  <title>LINX — Case File CR-CYB-104</title>
   <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" />
   
   <!-- Tailwind CSS -->
@@ -12,10 +12,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <!-- Google Fonts: Press Start 2P (8-bit), Inter & JetBrains Mono -->
+  <!-- Editorial display, readable dossier body, and forensic metadata -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
@@ -23,18 +23,18 @@
       theme: {
         extend: {
           fontFamily: {
-            pixel: ['"Press Start 2P"', 'monospace', 'cursive'],
-            sans: ['Inter', 'sans-serif'],
+            pixel: ['JetBrains Mono', 'monospace'],
+            sans: ['Source Serif 4', 'Georgia', 'serif'],
             mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
             dark: {
-              950: '#070B11',
-              900: '#0B111A',
-              850: '#101826',
-              800: '#162234',
-              700: '#203047',
-              600: '#334763'
+              950: '#000000',
+              900: '#0a0a0a',
+              850: '#111111',
+              800: '#181818',
+              700: '#2a2a2a',
+              600: '#525252'
             },
             police: {
               blue: '#1E40AF',
@@ -57,10 +57,33 @@
   </script>
   <style>
     body {
-      background-color: #070B11;
-      color: #F3F4F6;
+      background-color: #000;
+      color: #f5f5f5;
       overflow-x: hidden;
     }
+    /* Forensic dossier: hierarchy comes from type and rules, never translucency or glow. */
+    h1, h2, h3, h4, .dossier-title { font-family: 'Playfair Display', Georgia, serif; letter-spacing: -0.025em; }
+    [class*="rounded"] { border-radius: 0 !important; }
+    [class*="shadow"] { box-shadow: none !important; }
+    [class*="backdrop-blur"] { backdrop-filter: none !important; }
+    button, input, select { border-radius: 0 !important; }
+    button { letter-spacing: .035em; }
+    .font-pixel { font-family: 'JetBrains Mono', monospace !important; }
+    .text-blue-300, .text-blue-400, .text-blue-500, .text-cyan-400, .text-cyan-500,
+    .text-emerald-300, .text-emerald-400, .text-emerald-500, .text-purple-400,
+    .text-amber-300, .text-amber-400, .text-amber-500, .text-red-300, .text-red-400 { color: #f5f5f5 !important; }
+    [class*="bg-blue-"], [class*="bg-cyan-"], [class*="bg-emerald-"], [class*="bg-amber-"],
+    [class*="bg-purple-"], [class*="bg-red-"] { background-color: #111 !important; }
+    [class*="border-blue-"], [class*="border-cyan-"], [class*="border-emerald-"], [class*="border-amber-"],
+    [class*="border-purple-"], [class*="border-red-"] { border-color: #525252 !important; }
+    .bg-blue-600\/20, .bg-blue-900\/70, .bg-blue-900\/50, .bg-red-950\/80,
+    .bg-emerald-950, .bg-amber-500\/20, .bg-purple-600 { background-color: #111 !important; }
+    .border-blue-500\/30, .border-blue-700\/50, .border-blue-700\/60, .border-red-700\/70,
+    .border-emerald-800\/60, .border-amber-500\/40 { border-color: #525252 !important; }
+    .dossier-kicker { font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: #a3a3a3; }
+    .intro-film { filter: grayscale(1) contrast(1.08); image-rendering: pixelated; }
+    .intro-rule { height: 2px; background: #fff; width: 100%; }
+    .intro-copy { max-width: 760px; font: 500 clamp(1.4rem, 3vw, 2.75rem)/1.08 'Playfair Display', Georgia, serif; letter-spacing: -.03em; }
     #cy {
       width: 100%;
       height: 100%;
@@ -170,89 +193,45 @@
 </head>
 <body class="font-sans antialiased custom-scroll select-none">
 
-  <!-- ================= 8-BIT RETRO NIGHT STORY INTRO SCREEN ================= -->
-  <div id="storyIntroScreen" class="fixed inset-0 z-50 bg-[#050B08] flex flex-col justify-between p-6 md:p-12 crt-overlay overflow-hidden transition-opacity duration-700">
-    
-    <!-- Top Retro Terminal Bar -->
-    <div class="flex items-center justify-between border-b border-emerald-900/60 pb-4">
-      <div class="flex items-center space-x-3">
-        <span class="inline-block w-3 h-3 bg-retro-green animate-ping rounded-full"></span>
-        <span class="font-pixel text-[11px] md:text-xs text-retro-green tracking-wider">CYBER CRIME TERMINAL // OS-86.2</span>
+  <!-- ================= CASE BRIEFING FILM ================= -->
+  <div id="storyIntroScreen" class="fixed inset-0 z-50 bg-black flex flex-col p-6 md:p-10 overflow-hidden transition-opacity duration-500">
+    <div class="flex items-center justify-between border-b-2 border-white pb-4">
+      <div>
+        <div class="dossier-kicker">LINX / Case Intelligence</div>
+        <div class="font-mono text-xs mt-2">CASE BRIEFING / CR-CYB-104 / 2026</div>
       </div>
-      <div class="flex items-center space-x-4">
-        <button id="soundToggleBtn" onclick="toggleSound()" class="font-pixel text-[10px] text-retro-green/80 hover:text-retro-green px-3 py-1 border border-emerald-800 rounded bg-emerald-950/40 transition">
-          <i class="fa-solid fa-volume-high mr-1"></i> AUDIO: ON
-        </button>
-        <button onclick="skipIntro()" class="font-pixel text-[10px] text-retro-amber hover:text-amber-300 px-3 py-1 border border-amber-800 rounded bg-amber-950/40 transition">
-          SKIP INTRO [ESC] &gt;&gt;
-        </button>
-      </div>
+      <button onclick="skipIntro()" class="font-mono text-[11px] border border-white px-3 py-2 hover:bg-white hover:text-black transition">SKIP BRIEFING [ESC]</button>
     </div>
 
-    <!-- Center Cinematic Animation Display -->
-    <div class="max-w-4xl mx-auto w-full my-auto flex flex-col items-center justify-center text-center space-y-6">
-      
-      <!-- 8-Bit Pixel Animated Graphic Frame -->
-      <div class="relative w-80 h-52 md:w-[460px] md:h-64 border-2 border-emerald-600/80 bg-black/95 p-3 rounded-lg shadow-[0_0_35px_rgba(57,255,20,0.3)] flex items-center justify-center overflow-hidden">
-        <!-- SVG 8-Bit Pixel Scenes Container -->
-        <div id="pixelSceneContainer" class="w-full h-full flex items-center justify-center pixelated">
-          <!-- Dynamically swapped SVG scenes -->
-        </div>
-
-        <!-- Corner Reticles -->
-        <div class="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-retro-green"></div>
-        <div class="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-retro-green"></div>
-        <div class="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-retro-green"></div>
-        <div class="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-retro-green"></div>
+    <main class="w-full max-w-6xl mx-auto my-auto grid lg:grid-cols-[minmax(0,1.65fr)_minmax(280px,.65fr)] border-2 border-white">
+      <div class="relative aspect-video bg-black overflow-hidden border-b-2 lg:border-b-0 lg:border-r-2 border-white">
+        <video id="storyVideo" class="intro-film w-full h-full object-cover" muted playsinline preload="auto"></video>
       </div>
-
-      <!-- Typewriter Text Box with Fixed Spacing & Character Speaker Badge -->
-      <div class="w-full max-w-2xl bg-black/90 border border-emerald-800/80 p-5 rounded-md shadow-2xl min-h-[125px] flex flex-col justify-center text-left">
-        <div id="characterSpeakerBadge" class="font-pixel text-[10px] text-retro-amber mb-2 tracking-wider">
-          ▶ TARGET: THE CYBER HACKER CELL
+      <div class="p-6 md:p-9 flex flex-col justify-between min-h-[270px]">
+        <div>
+          <div id="characterSpeakerBadge" class="dossier-kicker mb-6">Incident 01 / Cyberabad</div>
+          <p id="typewriterText" class="intro-copy">A digital arrest scam opens the case.</p>
         </div>
-        <div class="flex items-start">
-          <p id="typewriterText" class="font-pixel text-[11px] sm:text-xs md:text-[13px] text-retro-green leading-[2.2] tracking-wider text-left w-full whitespace-pre-line break-words"></p>
-          <span id="terminalCursor" class="font-pixel text-sm text-retro-green cursor-blink ml-1">_</span>
+        <div class="mt-10">
+          <div class="intro-rule"></div>
+          <div class="flex justify-between mt-3 font-mono text-[10px] tracking-widest">
+            <span id="introStatusText">EVIDENCE BRIEFING</span>
+            <span id="introTimeRemaining">30 SEC</span>
+          </div>
         </div>
       </div>
+    </main>
 
-      <!-- Case Identifier Tagline -->
-      <div class="font-pixel text-[10px] text-gray-400 tracking-widest uppercase">
-        INCIDENT LOG: <span class="text-retro-cyan">CR-CYB-104/2026</span> // CODENAME: <span class="text-retro-amber">OPERATION CYBER-SPIDER</span>
-      </div>
-    </div>
-
-    <!-- Bottom Progress & Loading Status -->
-    <div class="space-y-2 max-w-4xl mx-auto w-full">
-      <div class="flex justify-between items-center font-pixel text-[9px] text-emerald-500">
-        <span id="introStatusText">DECIPHERING ENCRYPTED POLICE LOGS...</span>
-        <span id="introTimeRemaining">13s</span>
-      </div>
-      <div class="w-full bg-emerald-950/60 border border-emerald-800/80 h-3 rounded overflow-hidden p-0.5">
-        <div id="introProgressBar" class="h-full bg-retro-green transition-all duration-300" style="width: 5%;"></div>
-      </div>
+    <div class="max-w-6xl mx-auto w-full pt-5 flex justify-between font-mono text-[10px] tracking-[.14em] text-neutral-400">
+      <span>OPERATION CYBER-SPIDER</span>
+      <span id="introProgressBar">01 / 06</span>
     </div>
   </div>
 
 
   <!-- ================= TOP NAVIGATION BAR (INVESTIGATOR COCKPIT) ================= -->
   <header class="h-16 border-b border-dark-700 bg-dark-900/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
-    <div class="flex items-center space-x-4">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="Emblem of India" class="h-9 brightness-110" />
-      <div>
-        <div class="flex items-center space-x-2">
-          <h1 class="font-bold text-base tracking-wide text-white flex items-center">
-            ICNAS <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded bg-blue-900/70 text-blue-300 border border-blue-700/50">MHA SIH 26189</span>
-          </h1>
-          <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950 text-emerald-400 border border-emerald-800/60">
-            <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            CPU Deterministic Engine
-          </span>
-        </div>
-        <p class="text-[11px] text-gray-400">Explainable Temporal Crime Knowledge Graph | BSA 2023 Sec 63 Provenance</p>
-      </div>
-    </div>
+    <a href="#" class="dossier-title text-3xl leading-none text-white tracking-tight" aria-label="LINX home">LINX</a>
 
     <!-- Right Action Bar: Case File & Tools -->
     <div class="flex items-center space-x-3">
@@ -445,12 +424,13 @@
       <div id="content-graph" class="flex-1 relative w-full h-full">
         <div id="cy"></div>
 
-        <!-- Canvas Floating Quick Legend -->
-        <div class="absolute bottom-4 left-4 bg-dark-900/80 backdrop-blur-md border border-dark-700 p-2.5 rounded text-[11px] text-gray-400 flex items-center space-x-4 pointer-events-none">
-          <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1"></span> Solid = Verified Record</span>
-          <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 mr-1"></span> Amber = Inferred Link</span>
-          <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500 mr-1"></span> Dashed = Structural</span>
-          <span class="text-gray-500">| Click node or edge to inspect</span>
+        <!-- One-line reading key: the canvas should explain itself without becoming a tutorial. -->
+        <div class="absolute bottom-4 left-4 bg-black border border-dark-700 px-3 py-2 font-mono text-[10px] tracking-wide text-gray-400 pointer-events-none">
+          <span class="text-white">→</span> ARROW = RECORDED RELATIONSHIP DIRECTION
+          <span class="mx-2 text-dark-600">/</span>
+          SOLID = VERIFIED
+          <span class="mx-2 text-dark-600">/</span>
+          CLICK A LINE FOR ITS SOURCE
         </div>
       </div>
 
@@ -1110,43 +1090,21 @@ Date & Station Stamp : _____________________________________________
       </svg>`
     ];
 
-    // Story Narrative Sequence (~13 seconds total) with Speaker Badges
+    // Six deliberate, readable case beats: each generated film holds two five-second scenes.
     const storyScript = [
-      {
-        sceneIdx: 0,
-        badge: "▶ TARGET: HOODED CYBER HACKER CELL",
-        text: "CYBERABAD // 02:40 AM.\nA RETIRED PROFESSOR LOSES RS 28.5 LAKHS\nIN A COERCED 'DIGITAL ARREST' SCAM.",
-        duration: 3500,
-        status: "INTERCEPTING IP & UPI STREAMS..."
-      },
-      {
-        sceneIdx: 1,
-        badge: "▶ SUSPECT: CASH MULE IN GETAWAY VEHICLE",
-        text: "THE MONEY MULE WITHDRAWS THE LOOT IN MADHAPUR.\nWHITE SWIFT TS09AB1234 DISAPPEARS ON NH-65.",
-        duration: 3600,
-        status: "DECODING HIGHWAY ANPR & FASTAG..."
-      },
-      {
-        sceneIdx: 2,
-        badge: "▶ COVERT COORDINATOR: 'BHAIJAAN'",
-        text: "PUNE HAWALA BOSS NEVER CONTACTS THE VICTIMS.\nHE ORCHESTRATES FROM THE SHADOWS.",
-        duration: 3600,
-        status: "COMPUTING BETWEENNESS CENTRALITY..."
-      },
-      {
-        sceneIdx: 3,
-        badge: "▶ LEAD INVESTIGATOR: INSP. V. RAMESH",
-        text: "YOU ARE ASSIGNED TO CASE FILE CR-CYB-104.\nCONNECT THE DOTS. UNMASK THE NETWORK.",
-        duration: 3200,
-        status: "ICNAS TERMINAL ENGAGED. LOADING DOCKET..."
-      }
+      { video: 'assets/Video 1 — victim → money trail.mp4', badge: 'Incident 01 / Cyberabad / 02:40', text: 'A digital arrest scam opens the case.', status: 'Victim statement received' },
+      { video: 'assets/Video 1 — victim → money trail.mp4', badge: 'Evidence 02 / Financial trail', text: 'The money moves through a hidden mule network.', status: 'Transaction trail isolated' },
+      { video: 'assets/Video 2 — cash mule → white Swift.mp4', badge: 'Lead 03 / Madhapur', text: 'A cash mule leaves with the proceeds.', status: 'CCTV correlation established' },
+      { video: 'assets/Video 2 — cash mule → white Swift.mp4', badge: 'Evidence 04 / Highway link', text: 'One white Swift connects the route to Pune.', status: 'ANPR route confirmed' },
+      { video: 'assets/Video 3 — coordinator → investigator solves the case.mp4', badge: 'Subject 05 / Pune', text: 'A covert coordinator operates from the shadows.', status: 'Network broker identified' },
+      { video: 'assets/Video 3 — coordinator → investigator solves the case.mp4', badge: 'Mission 06 / CR-CYB-104', text: 'Trace the evidence. Resolve the network.', status: 'Case workspace ready' }
     ];
 
     let introTimer = null;
-    let typeWriterInterval = null;
     let storyStep = 0;
     let introStartTime = 0;
-    const totalIntroTime = 13900; // ~14 seconds
+    const beatDuration = 5000;
+    const totalIntroTime = storyScript.length * beatDuration;
 
     function startStoryIntro() {
       const screen = document.getElementById('storyIntroScreen');
@@ -1167,35 +1125,21 @@ Date & Station Stamp : _____________________________________________
       }
 
       const current = storyScript[storyStep];
-      // Update 8-bit visual character scene & speaker badge
-      document.getElementById('pixelSceneContainer').innerHTML = pixelScenes[current.sceneIdx];
+      const video = document.getElementById('storyVideo');
+      // Reset only on the first half of each generated clip; the five-second cut is preserved.
+      if (storyStep === 0 || storyScript[storyStep - 1].video !== current.video) {
+        video.src = current.video;
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      }
       document.getElementById('characterSpeakerBadge').innerText = current.badge;
       document.getElementById('introStatusText').innerText = current.status;
-      playRetroBeep(440 + storyStep * 110);
-
-      // Typewriter animation with fixed spacing
-      const textElem = document.getElementById('typewriterText');
-      textElem.innerText = "";
-      let charIdx = 0;
-
-      if (typeWriterInterval) clearInterval(typeWriterInterval);
-
-      typeWriterInterval = setInterval(() => {
-        if (charIdx < current.text.length) {
-          textElem.innerText += current.text[charIdx];
-          if (current.text[charIdx] !== ' ' && current.text[charIdx] !== '\n') {
-            playTypewriterClick();
-          }
-          charIdx++;
-        } else {
-          clearInterval(typeWriterInterval);
-          // Wait remaining duration then advance to next character slide
-          introTimer = setTimeout(() => {
-            storyStep++;
-            playStoryStep();
-          }, 950);
-        }
-      }, 30);
+      document.getElementById('typewriterText').innerText = current.text;
+      document.getElementById('introProgressBar').innerText = String(storyStep + 1).padStart(2, '0') + ' / 06';
+      introTimer = setTimeout(() => {
+        storyStep++;
+        playStoryStep();
+      }, beatDuration);
     }
 
     function updateProgressBar() {
@@ -1204,10 +1148,8 @@ Date & Station Stamp : _____________________________________________
         const progress = Math.min(100, (elapsed / totalIntroTime) * 100);
         const remainingSec = Math.max(0, Math.ceil((totalIntroTime - elapsed) / 1000));
         
-        const bar = document.getElementById('introProgressBar');
         const timeElem = document.getElementById('introTimeRemaining');
-        if (bar) bar.style.width = progress + '%';
-        if (timeElem) timeElem.innerText = remainingSec + 's';
+        if (timeElem) timeElem.innerText = remainingSec + ' SEC';
 
         if (elapsed >= totalIntroTime) {
           clearInterval(interval);
@@ -1217,9 +1159,7 @@ Date & Station Stamp : _____________________________________________
     }
 
     function skipIntro() {
-      if (typeWriterInterval) clearInterval(typeWriterInterval);
       if (introTimer) clearTimeout(introTimer);
-      playRetroBeep(880);
       finishIntro();
     }
 
@@ -1330,7 +1270,7 @@ Date & Station Stamp : _____________________________________________
               'label': 'data(label)',
               'color': '#FFFFFF',
               'font-size': '11px',
-              'font-family': 'Inter, sans-serif',
+              'font-family': 'Source Serif 4, Georgia, serif',
               'text-valign': 'bottom',
               'text-margin-y': '6px',
               'background-color': 'data(color)',
@@ -1342,7 +1282,7 @@ Date & Station Stamp : _____________________________________________
               'text-background-opacity': 0.85,
               'text-background-color': '#0B111A',
               'text-background-padding': '3px',
-              'text-background-shape': 'roundrectangle'
+              'text-background-shape': 'rectangle'
             }
           },
           {
@@ -1351,14 +1291,16 @@ Date & Station Stamp : _____________________________________________
               'width': 2,
               'line-color': 'data(color)',
               'curve-style': 'bezier',
-              'target-arrow-shape': 'none',
+              'target-arrow-shape': 'triangle',
+              'target-arrow-color': 'data(color)',
+              'arrow-scale': 0.8,
               'label': 'data(label)',
               'font-size': '9px',
               'color': '#94A3B8',
               'text-background-opacity': 0.85,
               'text-background-color': '#070B11',
               'text-background-padding': '2px',
-              'text-background-shape': 'roundrectangle'
+              'text-background-shape': 'rectangle'
             }
           },
           {
